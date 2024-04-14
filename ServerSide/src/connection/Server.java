@@ -1,4 +1,6 @@
 package connection;
+import Items.Inventory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -27,8 +29,11 @@ public class Server {
     class ClientHandler implements Runnable {
 
         private Socket clientSocket;
+        private Inventory inventory;
+
         ClientHandler(Socket clientSocket) {
             this.clientSocket = clientSocket;
+            inventory = new Inventory();
         }
         public void run() {
             try {
