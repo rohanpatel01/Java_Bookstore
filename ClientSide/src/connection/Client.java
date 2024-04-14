@@ -7,15 +7,15 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class LibraryClient {
+public class Client {
 
     public static void main(String[] args) {
-        new LibraryClient().setupNetworking();
+        new Client().setupNetworking();
     }
 
     private void setupNetworking() {
         try {
-            Socket socket = new Socket("11.21.28.134", 1024);
+            Socket socket = new Socket("11.20.16.195", 1024);
             System.out.println("network established");
 
             PrintWriter writer = new PrintWriter(socket.getOutputStream());

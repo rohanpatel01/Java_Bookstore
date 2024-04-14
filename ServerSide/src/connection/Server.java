@@ -6,9 +6,9 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class LibraryServer {
+public class Server {
     public static void main(String[] args) {
-        new LibraryServer().setupNetworking();
+        new Server().setupNetworking();
     }
 
     private void setupNetworking() {
