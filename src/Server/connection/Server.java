@@ -16,7 +16,7 @@ public class Server {
             ServerSocket server = new ServerSocket(1024);
             while (true) {
                 Socket clientSocket = server.accept();
-                System.out.println("incoming transmission");
+                System.out.println("client connected");
 
                 Thread t = new Thread(new ClientHandler(clientSocket));
                 t.start();
@@ -38,14 +38,11 @@ public class Server {
                 PrintWriter writer = new PrintWriter(clientSocket.getOutputStream());
                 BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
+                String recievedString = (String )(new ObjectInputStream(clientSocket.getInputStream()).readObject());
+                System.out.println("recieved string gotten: " + recievedString);
 
-                Book book = (Book)(new ObjectInputStream(clientSocket.getInputStream()).readObject());
-//                System.out.println("server got the book: " + book);
-//                TestSend testSend = (TestSend)  (new ObjectInputStream(clientSocket.getInputStream()).readObject());
-                System.out.println("recieved testSend from server");
-                System.out.println("Book: " + book);
                 String message;
-                while ((message = reader.readLine()) != null) {
+                while (((message = reader.readLine()) != null ) || ()) {
                     System.out.println("RECEIVED: " + message);
                     System.out.println(clientSocket.getInetAddress());
                     writer.println(message);

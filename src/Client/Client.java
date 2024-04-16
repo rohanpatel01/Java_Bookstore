@@ -17,7 +17,7 @@ public class Client {
 
     Object selectedObject;
 
-
+    String testSendString = "";
     Socket clientSocket;
 
     // Controller
@@ -31,8 +31,10 @@ public class Client {
 
     public void bookSelected(){
         System.out.println("book selected");
-        Book book = new Book("Glass Castle", "summary", "Jeannette Walls", 288);
-        selectedObject = book;
+//        Book book = new Book("Glass Castle", "summary", "Jeannette Walls", 288);
+//        selectedObject = book;
+        testSendString = "book selected";
+        System.out.println("Client socket: " + clientSocket);
     }
     public static void main(String[] args) {
         Thread clientNetworkingThread = new Thread(() -> {
@@ -54,19 +56,28 @@ public class Client {
 
             ObjectOutputStream oos = new ObjectOutputStream(clientSocket.getOutputStream());
             Scanner scanner = new Scanner(System.in);
+            boolean x = true;
             while (true) {
                 String input = scanner.nextLine();
                 writer.println(input);
                 writer.flush();
 
-                if (selectedObject != null) {
-                    System.out.println("selected object not null");
-                    oos.writeObject(selectedObject);
+                System.out.println("test send string: " + testSendString);
+                if (x) {
+
+                    oos.writeObject(testSendString);
                     oos.flush();
-                    selectedObject = null;
-                } else {
-                    System.out.println("SELECTED OBJECT NULL");
+                    x = false;
                 }
+//                if (selectedObject != null) {
+//                    System.out.println("selected object not null");
+////                    oos.writeObject(selectedObject);
+//                    oos.writeObject(testSendString);
+//                    oos.flush();
+//                    selectedObject = null;
+//                } else {
+//                    System.out.println("SELECTED OBJECT NULL");
+//                }
 
                 String received = reader.readLine();
                 System.out.println("I RECEIVED BACK: " + received);
