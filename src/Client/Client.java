@@ -54,7 +54,7 @@ public class Client {
             PrintWriter writer = new PrintWriter(clientSocket.getOutputStream());
             BufferedReader reader = new BufferedReader((new InputStreamReader(clientSocket.getInputStream())));
 
-            ObjectOutputStream oos = new ObjectOutputStream(clientSocket.getOutputStream());
+//            ObjectOutputStream oos = new ObjectOutputStream(clientSocket.getOutputStream());
             Scanner scanner = new Scanner(System.in);
             boolean x = true;
             while (true) {
@@ -62,13 +62,13 @@ public class Client {
                 writer.println(input);
                 writer.flush();
 
-                System.out.println("test send string: " + testSendString);
-                if (x) {
-
-                    oos.writeObject(testSendString);
-                    oos.flush();
-                    x = false;
-                }
+//                System.out.println("test send string: " + testSendString);
+//                if (x) {
+//
+//                    oos.writeObject(testSendString);
+//                    oos.flush();
+//                    x = false;
+//                }
 //                if (selectedObject != null) {
 //                    System.out.println("selected object not null");
 ////                    oos.writeObject(selectedObject);
