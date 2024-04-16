@@ -1,6 +1,8 @@
 package Items;
 
-public class Book extends LibraryItem {
+import java.io.Serializable;
+
+public class Book extends LibraryItem implements Serializable {
 
     private int numPages;
     private String author;

@@ -1,6 +1,8 @@
 package Items;
 
-public class AudioBook extends LibraryItem {
+import java.io.Serializable;
+
+public class AudioBook extends LibraryItem implements Serializable {
 
     private String narrator;
 

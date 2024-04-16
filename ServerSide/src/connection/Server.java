@@ -1,10 +1,8 @@
 package connection;
 import Items.Inventory;
+import Items.Book;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -29,12 +27,15 @@ public class Server {
     class ClientHandler implements Runnable {
 
         private Socket clientSocket;
-        private Inventory inventory;
+//        private Inventory inventory;
 
         ClientHandler(Socket clientSocket) {
             this.clientSocket = clientSocket;
-            inventory = new Inventory();
+//            inventory = new Inventory();
         }
+
+
+        @Override
         public void run() {
             try {
                 PrintWriter writer = new PrintWriter(clientSocket.getOutputStream());
@@ -42,6 +43,15 @@ public class Server {
 
                 String message;
                 while ((message = reader.readLine()) != null) {
+
+                    try {
+                        Book book = (Book)(new ObjectInputStream(clientSocket.getInputStream()).readObject());
+                        System.out.println("GOT THE BOOK " + book);
+                    } catch (IOException ioe) {
+
+                    } catch (ClassNotFoundException cnfe) {
+
+                    }
                     System.out.println("RECEIVED: " + message);
                     System.out.println(clientSocket.getInetAddress());
                     writer.println(message);

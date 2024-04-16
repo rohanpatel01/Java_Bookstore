@@ -1,8 +1,9 @@
 package Items;
 
+import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public abstract class LibraryItem {
+public abstract class LibraryItem implements Serializable {
     // item type, title, author, pages, summary description
 
     // constructor info

@@ -1,6 +1,8 @@
 package Items;
 
-public class Movie extends LibraryItem {
+import java.io.Serializable;
+
+public class Movie extends LibraryItem implements Serializable {
 
     private String movieRunTime;
     private String director;

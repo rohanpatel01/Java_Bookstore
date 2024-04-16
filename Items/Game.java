@@ -1,6 +1,8 @@
 package Items;
 
-public class Game extends LibraryItem {
+import java.io.Serializable;
+
+public class Game extends LibraryItem implements Serializable {
 
     private String developerStudio;
 
