@@ -15,11 +15,10 @@ import Shared.Book;
 
 public class Client {
 
-    Object selectedObject;
 
     String testSendString = "";
     Socket clientSocket;
-
+    Object currentObject = null;
     // Controller
     @FXML
     Button uniqueBook;
@@ -31,8 +30,6 @@ public class Client {
 
     public void bookSelected(){
         System.out.println("book selected");
-//        Book book = new Book("Glass Castle", "summary", "Jeannette Walls", 288);
-//        selectedObject = book;
         testSendString = "book selected";
         System.out.println("Client socket: " + clientSocket);
     }
@@ -41,43 +38,37 @@ public class Client {
             new Client().setupNetworking();
         });
         clientNetworkingThread.start();
-        // need this because want to read elements that are created from onAction events and read them at same time
     }
 
     private void setupNetworking() {
         try {
             System.out.println("attempting client socket creation");
-            clientSocket = new Socket("11.20.16.195", 1024);
+            clientSocket = new Socket("11.20.42.66", 1024);
             System.out.println("client socket created");
             System.out.println("network established, clientSocket: " + clientSocket);
 
             PrintWriter writer = new PrintWriter(clientSocket.getOutputStream());
             BufferedReader reader = new BufferedReader((new InputStreamReader(clientSocket.getInputStream())));
 
-//            ObjectOutputStream oos = new ObjectOutputStream(clientSocket.getOutputStream());
             Scanner scanner = new Scanner(System.in);
-            boolean x = true;
-            while (true) {
-                String input = scanner.nextLine();
-                writer.println(input);
-                writer.flush();
 
-//                System.out.println("test send string: " + testSendString);
-//                if (x) {
-//
-//                    oos.writeObject(testSendString);
-//                    oos.flush();
-//                    x = false;
-//                }
-//                if (selectedObject != null) {
-//                    System.out.println("selected object not null");
-////                    oos.writeObject(selectedObject);
-//                    oos.writeObject(testSendString);
-//                    oos.flush();
-//                    selectedObject = null;
-//                } else {
-//                    System.out.println("SELECTED OBJECT NULL");
-//                }
+            while (true) {
+
+                String input = scanner.nextLine();
+                if (input.equals("send book")) {
+                    Book book = new Book("Glass Castle", "SUMMARY", "AUTHOR", 288);
+//                    TestSend book = new TestSend();
+//                    System.out.println("Book title: " + book.title);
+                    System.out.println("Book" + book);
+                    writer.println(input);
+                    writer.flush();
+                    sendObject(clientSocket, book);
+
+
+                } else {
+                    writer.println(input);
+                    writer.flush();
+                }
 
                 String received = reader.readLine();
                 System.out.println("I RECEIVED BACK: " + received);
@@ -88,4 +79,40 @@ public class Client {
         }
     }
 
+    public void sendObject(Socket socket, Object object) throws IOException {
+        System.out.println("attempt send book");
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+        objectOutputStream.writeObject(object); // dont hardcode the type
+        objectOutputStream.flush();
+        System.out.println("sent book");
+    }
+
 }
+
+
+
+
+
+//class SendObject implements Runnable {
+//    private Socket socket;
+//    private Object object;
+//    public SendObject(Socket socket, Object object) {
+//       this.socket = socket;
+//       this.object = object;
+//    }
+//
+//    // should have list or something and pull from there so we can click multiple things
+//   @Override
+//   public void run() {
+//        try {
+//
+//            ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+//            objectOutputStream.writeObject(object);
+//            objectOutputStream.flush();
+//
+//        } catch (IOException ioException) {
+//            ioException.printStackTrace();
+//        }
+//
+//   }
+//}

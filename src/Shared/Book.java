@@ -6,8 +6,8 @@ import java.util.List;
 
 public class Book extends LibraryItem implements Serializable {
 
-    private int numPages;
-    private String author;
+    public int numPages;
+    public String author;
 
 //    public int itemID = 0;
 //    public String title;
@@ -52,6 +52,6 @@ public class Book extends LibraryItem implements Serializable {
     }
     @Override
     public String toString() {
-        return itemType + title + summaryDescription + isAvailable;
+        return this.itemType + this.title + this.summaryDescription + this.isAvailable + this.itemID;
     }
 }

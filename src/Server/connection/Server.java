@@ -28,42 +28,56 @@ public class Server {
 
     class ClientHandler implements Runnable {
 
-        private Socket socket;
+        private Socket clientSocket;
 
         ClientHandler(Socket clientSocket) {
-            this.socket = clientSocket;
+            this.clientSocket = clientSocket;
         }
         public void run() {
+
+
             try {
-                PrintWriter writer = new PrintWriter(socket.getOutputStream());
-                BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-//                ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
+                PrintWriter writer = new PrintWriter(clientSocket.getOutputStream());
+                BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                String message;
+                    while ((message = reader.readLine()) != null) {
 
-                String recievedString = (String )(new ObjectInputStream(socket.getInputStream()).readObject());
-                System.out.println("recieved string gotten: " + recievedString);
+                        if (message.equals("send book")) {
+                            System.out.println("Server got object");
+                            ObjectInputStream objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
+                            Object recievedObject = objectInputStream.readObject();
 
-                String message = null;
-                Object readObject = null;
-                while (((message = reader.readLine()) != null ) ) { // || ((readObject = objectInputStream.readObject()) != null)
+                            if (recievedObject != null) {
+                                System.out.println("recieved object");
+                                if (recievedObject instanceof Book) { // was book
+//                                    System.out.println("Test send: " + ((TestSend) recievedObject).hello);
+                                    System.out.println("Item is book");
+                                    Book book = (Book) recievedObject;
+                                    System.out.println("Book title: " + book.title);
+                                    System.out.println("Book: " + book);
+                                }
+                            } else {
+                                System.out.println("IS NULL :(");
+                            }
 
-//                    if (readObject != null){
-//                        System.out.println("Object Recieved");
-//                        // hardcoding a book but need to be able to read any type of library item
-//                        Book newBook = (Book) readObject;
-//                        System.out.println("new book: " + newBook);
-//                    }
+                        } else {
 
-//                    if (message != null) {
-                        System.out.println("RECEIVED: " + message);
-                        System.out.println(socket.getInetAddress());
-                        writer.println(message);
-                        writer.flush();
-//                    }
-                }
-            } catch (Exception e) {
-                System.out.println("Exception in Server - Client Handler");
-                e.printStackTrace();
-            }
+                            // maybe put the read object stuff in another thread?
+//                            if (recievedObject != null) {
+//                                System.out.println("Server got book");
+//
+//                            } else { // normal message
+
+                            System.out.println("RECEIVED: " + message);
+                            System.out.println(clientSocket.getInetAddress());
+                            writer.println(message);
+                            writer.flush();
+//                            }
+
+                        }
+                    }
+            } catch (IOException ioe) { ioe.printStackTrace(); }
+            catch (ClassNotFoundException classNotFoundException) { classNotFoundException.printStackTrace(); }
         }
     }
 }
