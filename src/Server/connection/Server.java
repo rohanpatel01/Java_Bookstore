@@ -37,45 +37,19 @@ public class Server {
 
 
             try {
-                PrintWriter writer = new PrintWriter(clientSocket.getOutputStream());
-                BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                String message;
-                    while ((message = reader.readLine()) != null) {
-
-                        if (message.equals("send book")) {
-                            System.out.println("Server got object");
-                            ObjectInputStream objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
-                            Object recievedObject = objectInputStream.readObject();
-
-                            if (recievedObject != null) {
-                                System.out.println("recieved object");
-                                if (recievedObject instanceof Book) { // was book
-//                                    System.out.println("Test send: " + ((TestSend) recievedObject).hello);
-                                    System.out.println("Item is book");
-                                    Book book = (Book) recievedObject;
-                                    System.out.println("Book title: " + book.title);
-                                    System.out.println("Book: " + book);
-                                }
-                            } else {
-                                System.out.println("IS NULL :(");
-                            }
-
-                        } else {
-
-                            // maybe put the read object stuff in another thread?
-//                            if (recievedObject != null) {
-//                                System.out.println("Server got book");
-//
-//                            } else { // normal message
-
-                            System.out.println("RECEIVED: " + message);
-                            System.out.println(clientSocket.getInetAddress());
-                            writer.println(message);
-                            writer.flush();
-//                            }
-
-                        }
+//                PrintWriter writer = new PrintWriter(clientSocket.getOutputStream());
+//                BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+//                String message;
+                Object recievedObject = null;
+                ObjectInputStream objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
+                while ( ( recievedObject = objectInputStream.readObject() ) != null ){
+                    if (recievedObject instanceof Book) {
+                        System.out.println("Server got book");
+                        Book book = (Book) recievedObject;
+                        System.out.println("Book: " + book);
                     }
+                    System.out.println("Server recieved object");
+                }
             } catch (IOException ioe) { ioe.printStackTrace(); }
             catch (ClassNotFoundException classNotFoundException) { classNotFoundException.printStackTrace(); }
         }

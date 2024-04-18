@@ -1,6 +1,7 @@
 package Client;
 
 import Shared.TestSend;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 
 import java.io.*;
@@ -16,10 +17,8 @@ import Shared.Book;
 public class Client {
 
 
-    String testSendString = "";
     Socket clientSocket;
-    Object currentObject = null;
-    // Controller
+
     @FXML
     Button uniqueBook;
 
@@ -29,10 +28,15 @@ public class Client {
     }
 
     public void bookSelected(){
-        System.out.println("book selected");
-        testSendString = "book selected";
-        System.out.println("Client socket: " + clientSocket);
+        Object book = new Book("Glass Castle", "Description", "Author", 288);
+        try {
+            System.out.println("Socket: " + clientSocket);
+            System.out.println("Book: " + book);
+            sendObject(clientSocket, book);
+        } catch (IOException ioException) { ioException.printStackTrace(); }
+
     }
+
     public static void main(String[] args) {
         Thread clientNetworkingThread = new Thread(() -> {
             new Client().setupNetworking();
@@ -43,44 +47,33 @@ public class Client {
     private void setupNetworking() {
         try {
             System.out.println("attempting client socket creation");
-            clientSocket = new Socket("11.20.42.66", 1024);
+            clientSocket = new Socket("10.154.144.2", 1024);
             System.out.println("client socket created");
             System.out.println("network established, clientSocket: " + clientSocket);
 
-            PrintWriter writer = new PrintWriter(clientSocket.getOutputStream());
-            BufferedReader reader = new BufferedReader((new InputStreamReader(clientSocket.getInputStream())));
+//            PrintWriter writer = new PrintWriter(clientSocket.getOutputStream());
+//            BufferedReader reader = new BufferedReader((new InputStreamReader(clientSocket.getInputStream())));
 
-            Scanner scanner = new Scanner(System.in);
+//            Scanner scanner = new Scanner(System.in); // is blocking until new content is read
 
             while (true) {
-
-                String input = scanner.nextLine();
-                if (input.equals("send book")) {
-                    Book book = new Book("Glass Castle", "SUMMARY", "AUTHOR", 288);
-//                    TestSend book = new TestSend();
-//                    System.out.println("Book title: " + book.title);
-                    System.out.println("Book" + book);
-                    writer.println(input);
-                    writer.flush();
-                    sendObject(clientSocket, book);
-
-
-                } else {
-                    writer.println(input);
-                    writer.flush();
-                }
-
-                String received = reader.readLine();
-                System.out.println("I RECEIVED BACK: " + received);
+//                synchronized (currentObject) {
+//                    if (currentObject instanceof Book) {
+//                        System.out.println("Sending book");
+//                        sendObject(clientSocket, currentObject);
+//                        currentObject = new Object(); // set it back to null after processed bc dont want keep sending
+//
+//                    }
+//                }
+//
             }
-
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
+        } catch (IOException ioe) { ioe.printStackTrace(); }
     }
 
     public void sendObject(Socket socket, Object object) throws IOException {
         System.out.println("attempt send book");
+        System.out.println("sendObject socket: " + socket);
+        System.out.println("send object object: " + object);
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
         objectOutputStream.writeObject(object); // dont hardcode the type
         objectOutputStream.flush();
