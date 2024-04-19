@@ -1,57 +1,23 @@
 package Shared;
-
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Book extends LibraryItem implements Serializable {
 
     public int numPages;
     public String author;
 
-//    public int itemID = 0;
-//    public String title;
-//    public String summaryDescription;
-//    public boolean isAvailable;
-//    public String itemType;
-//
-//    public int numberCopiesRemaining;
-//    public String[] pastMembers;
-//    public String memberCurrentlyCheckingOut;
-//    public String lastTimeCheckedOut; // see what type this has to be and how we can get time
      public Book(String title, String summaryDescription, String author, int numPages) {
 
-         // other stuff from LibraryItem
+         super(title, summaryDescription);
+         this.itemID = LibraryItem.LIBRARY_ID;
+         LibraryItem.LIBRARY_ID += 1;
 
-//         public int itemID = 0;
-//         public String title;
-//         public String summaryDescription;
-//         public boolean isAvailable;
-//         public String itemType;
-//
-//         public int numberCopiesRemaining;
-//         public List<String> pastMembers;
-//         public String memberCurrentlyCheckingOut;
-//         public String lastTimeCheckedOut; // see what type this has to be and how we can get time
-
-
-
-         itemID = 0; // need to make unique after
-         numberCopiesRemaining = 1;
-         pastMembers = new ArrayList<>();
-         memberCurrentlyCheckingOut = "";
-         lastTimeCheckedOut = "";
-
-         this.title = title;
-         this.summaryDescription = summaryDescription;
-         this.itemType = "book";
-         this.isAvailable = true;
-
-        this.author = author;
-        this.numPages = numPages;
+         this.itemType = "BOOK";
+         this.author = author;
+         this.numPages = numPages;
     }
     @Override
     public String toString() {
-        return this.itemType + this.title + this.summaryDescription + this.isAvailable + this.itemID;
+        return (itemID + " - " +  itemType + " : " + title + " : " + summaryDescription + " : is available:" + isAvailable);
     }
 }

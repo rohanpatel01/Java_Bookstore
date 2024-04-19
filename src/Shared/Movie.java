@@ -7,12 +7,11 @@ public class Movie extends LibraryItem {
 
     public Movie (String title, String summaryDescription, String movieRunTime, String director) {
 
-//        this.itemID = ???;
-        this.title = title;
-        this.summaryDescription = summaryDescription;
-        this.itemType = "movie";
-        this.isAvailable = true;
+        super(title, summaryDescription);
+        this.itemID = LibraryItem.LIBRARY_ID;
+        LibraryItem.LIBRARY_ID += 1;
 
+        this.itemType = "MOVIE";
         this.movieRunTime = movieRunTime;
         this.director = director;
     }
