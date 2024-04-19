@@ -12,4 +12,11 @@ public class AudioBook extends LibraryItem {
         this.itemType = "AUDIOBOOK";
         this.narrator = narrator;
     }
+
+    @Override
+    public String toString() {
+        return (itemID + " - " +  itemType + " : " + title + " : " + summaryDescription);
+    }
+
+
 }

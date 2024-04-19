@@ -20,9 +20,24 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <VBox prefHeight="200.0" prefWidth="100.0">
+            <VBox layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0">
                <children>
                   <Button fx:id="uniqueBook" mnemonicParsing="false" onAction="#bookSelected" prefHeight="96.0" prefWidth="182.0" text="Book" />
+               </children>
+            </VBox>
+            <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1">
+               <children>
+                  <Button fx:id="uniqueMovie" mnemonicParsing="false" onAction="#movieSelected" prefHeight="105.0" prefWidth="185.0" text="Movie" />
+               </children>
+            </VBox>
+            <VBox prefHeight="200.0" prefWidth="100.0" GridPane.rowIndex="1">
+               <children>
+                  <Button fx:id="uniqueGame" mnemonicParsing="false" onAction="#gameSelected" prefHeight="126.0" prefWidth="184.0" text="Game" />
+               </children>
+            </VBox>
+            <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <children>
+                  <Button fx:id="uniqueAudiobook" mnemonicParsing="false" onAction="#audiobookSelected" prefHeight="154.0" prefWidth="260.0" text="Audiobook" />
                </children>
             </VBox>
          </children>

@@ -17,4 +17,10 @@ public class Movie extends LibraryItem {
     }
 
 
+    @Override
+    public String toString() {
+        return (itemID + " - " +  itemType + " : " + title + " : " + summaryDescription);
+    }
+
+
 }

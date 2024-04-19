@@ -11,4 +11,10 @@ public class Game extends LibraryItem {
         this.itemType = "GAME";
         this.developerStudio = developerStudio;
     }
+
+    @Override
+    public String toString() {
+        return (itemID + " - " +  itemType + " : " + title + " : " + summaryDescription);
+    }
+
 }

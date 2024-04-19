@@ -9,8 +9,12 @@ public class Book extends LibraryItem implements Serializable {
      public Book(String title, String summaryDescription, String author, int numPages) {
 
          super(title, summaryDescription);
-         this.itemID = LibraryItem.LIBRARY_ID;
-         LibraryItem.LIBRARY_ID += 1;
+
+         // only increment the library ID if one with same title does not already exist
+         if (!Inventory.bookList.containsKey(title)) {
+             this.itemID = LibraryItem.LIBRARY_ID;
+             LibraryItem.LIBRARY_ID += 1;
+         }
 
          this.itemType = "BOOK";
          this.author = author;
@@ -18,6 +22,6 @@ public class Book extends LibraryItem implements Serializable {
     }
     @Override
     public String toString() {
-        return (itemID + " - " +  itemType + " : " + title + " : " + summaryDescription + " : is available:" + isAvailable);
+        return (itemID + " - " +  itemType + " : " + title + " : " + summaryDescription);
     }
 }

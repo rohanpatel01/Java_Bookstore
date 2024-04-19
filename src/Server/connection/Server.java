@@ -3,8 +3,9 @@ package Server.connection;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import Shared.Book;
-import Shared.Inventory;
+import java.util.Map;
+
+import Shared.*;
 
 public class Server {
 
@@ -65,18 +66,38 @@ public class Server {
         }
         public void run() {
 
-
             Thread objectReaderThread = new Thread(() -> {
                 try {
                     while (true) { // should have a while true to recieve objects?
                         if ((objectRecieved = objectInputStream.readObject()) != null) {
-                            System.out.println("Server got object");
 
-                            // have another method parse which object and add it to inventory
-                            if (objectRecieved instanceof Book) {
-                                System.out.println("BOOOKKK");
-                                System.out.println( (Book) objectRecieved);
+                            addToInventory(objectRecieved);
+
+                            for (String keys : Inventory.bookList.keySet() )
+                            {
+                                System.out.println(keys + ":"+ Inventory.bookList.get(keys));
                             }
+                            System.out.println("============================================");
+
+                            for (String keys : Inventory.movieList.keySet() )
+                            {
+                                System.out.println(keys + ":"+ Inventory.movieList.get(keys));
+                            }
+                            System.out.println("============================================");
+
+
+                            for (String keys : Inventory.gameList.keySet() )
+                            {
+                                System.out.println(keys + ":"+ Inventory.gameList.get(keys));
+                            }
+                            System.out.println("============================================");
+
+                            for (String keys : Inventory.audiobookList.keySet() )
+                            {
+                                System.out.println(keys + ":"+ Inventory.audiobookList.get(keys));
+                            }
+                            System.out.println("============================================");
+
                         }
                     }
 
@@ -87,4 +108,28 @@ public class Server {
             objectReaderThread.start();
         }
     }
+
+
+    private void addToInventory(Object objectRecieved) {
+
+
+        if (objectRecieved instanceof Book) {
+            inventory.addBook((Book) objectRecieved);
+
+        } else if (objectRecieved instanceof Movie) {
+            inventory.addMovie((Movie) objectRecieved);
+
+        } else if (objectRecieved instanceof Game) {
+            inventory.addGame((Game) objectRecieved);
+
+        } else if (objectRecieved instanceof AudioBook) {
+           inventory.addAudiobook((AudioBook) objectRecieved);
+        }
+
+    }
+
+
+
+
+
 }
