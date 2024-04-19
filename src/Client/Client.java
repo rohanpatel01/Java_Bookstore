@@ -42,7 +42,7 @@ public class Client {
      public void setupNetworking() {
         try {
             System.out.println("attempting client socket creation");
-            clientSocket = new Socket("10.145.34.2", 1024);
+            clientSocket = new Socket("11.21.22.194", 1024);
             System.out.println("client socket created");
             System.out.println("network established, clientSocket: " + clientSocket);
 

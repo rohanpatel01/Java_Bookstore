@@ -8,9 +8,7 @@ import Shared.TestSend;
 
 public class Server {
 
-    Object objectRecieved;
-    ObjectInputStream objectInputStream;
-    Socket clientSocket;
+
 
 
     public static void main(String[] args) {
@@ -18,13 +16,22 @@ public class Server {
     }
 
     private void setupNetworking() {
+        Object objectRecieved;
+        ObjectInputStream objectInputStream;
+        Socket clientSocket;
+
+        PrintWriter writer = null;
+        BufferedReader reader = null;
+
         try {
             ServerSocket server = new ServerSocket(1024);
             while (true) {
                 clientSocket = server.accept();
                 System.out.println("client connected");
 
-                ObjectInputStream objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
+                objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
+
+
                 System.out.println("object input stream: " + objectInputStream);
                 Thread t = new Thread(new ClientHandler(clientSocket, objectInputStream));
                 t.start();
@@ -33,19 +40,9 @@ public class Server {
             ioe.printStackTrace();
         }
 
-        objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
+//        objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
 
-        Thread objectReaderThread = new Thread(() -> {
-            String message;
-            try {
-                if ((message = clientSocke.readLine()) != null) {
-                    System.out.println(message);
-                }
-
-            } catch (IOException ioe) {
-                ioe.printStackTrace();
-            }
-        });
+       ;
 
     }
 
@@ -53,25 +50,49 @@ public class Server {
 
         private Socket clientSocket;
         private ObjectInputStream objectInputStream;
+        private Object objectRecieved;
+
 
         ClientHandler(Socket clientSocket, ObjectInputStream objectInputStream) {
             this.clientSocket = clientSocket;
             this.objectInputStream = objectInputStream;
 
+
+            BufferedReader reader;
+            PrintWriter writer;
+            try {
+                reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                writer = new PrintWriter(clientSocket.getOutputStream());
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            // try creating reader thread in here
+            // TODO: also need writer thread?
+
+            Thread objectReaderThread = new Thread(() -> {
+                try {
+                    if ((objectRecieved = objectInputStream.readObject()) != null) {
+                        System.out.println("Server got object");
+                        if (objectRecieved instanceof Book) {
+                            System.out.println("BOOOKKK");
+                        }
+                    }
+
+                } catch (IOException ioe) { ioe.printStackTrace(); }
+                catch (ClassNotFoundException classNotFoundException) { classNotFoundException.printStackTrace(); }
+            });
+
+            objectReaderThread.start();
+
+
         }
         public void run() {
 
-              try {
-                  if ((objectRecieved = objectInputStream.readObject()) != null) {
-                     if (objectRecieved instanceof Book) {
-                         System.out.println("got book");
-                     }
-                  }
-              } catch (IOException e) {
-                  throw new RuntimeException(e);
-              } catch (ClassNotFoundException e) {
-                  throw new RuntimeException(e);
-              }
+             if (objectRecieved instanceof Book) {
+                 System.out.println("got book");
+             }
 
 
 
