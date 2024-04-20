@@ -12,7 +12,6 @@ public class FinalGUI extends Application {
 
     @Override
     public void start(Stage applicationStage) throws IOException {
-//        Parent loader = FXMLLoader.load(getClass().getResource("GUI.fxml"));
         Parent loader = FXMLLoader.load(getClass().getResource("LoginPage.fxml"));
         //Scene scene = new Scene(loader.load());
         applicationStage.setTitle("MyJavaFX");

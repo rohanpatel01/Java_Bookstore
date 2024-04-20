@@ -14,8 +14,10 @@ import javafx.scene.Node;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
 import javafx.stage.Stage;
 
+import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -27,6 +29,7 @@ public class Controller {
     private Stage stage;
     private Scene scene;
     private Parent root;
+    private boolean isAdmin = false;
 
 //    Parent libraryGUI;
 //    Parent landingGUI;
@@ -45,7 +48,8 @@ public class Controller {
 
 
     // start create/login fxml
-
+    @FXML
+    TitledPane titledPane;
     @FXML
     Button signupButton;
     @FXML
@@ -58,6 +62,8 @@ public class Controller {
     TextField loginUser;
     @FXML
     TextField loginPassword;
+    @FXML
+    Button changeUserButton;
 
     // end create/login fxml
 
@@ -65,13 +71,15 @@ public class Controller {
     Client client;
     ObjectOutputStream objectOutputStream;
     Inventory clientSideInventory;
-    Map<String, String> userCredentials;
+    Map<String, String> memberCredentials;
+    Map<String, String> adminCredentials;
 
     public Controller() {
         client = new Client();
         client.setupNetworking();
         clientSideInventory = new Inventory();
-        userCredentials = new HashMap<>();
+        memberCredentials = new HashMap<>();
+        adminCredentials = new HashMap<>();
 
         // find landing and library GUI .fxml files
 //        try {
@@ -92,18 +100,39 @@ public class Controller {
         String username = loginUser.getText();
         String password = loginPassword.getText();
         System.out.println("login button pressed ");
-        if (!(username.isEmpty() || password.isEmpty())) {
-            if ( userCredentials.containsKey(username) && password.equals(userCredentials.get(username)) ){
-                System.out.println("login good");
-                try {
-                    root = FXMLLoader.load(getClass().getResource("GUI.fxml"));
-                    stage = (Stage)((Node) event.getSource()).getScene().getWindow();
-                    scene = new Scene(root);
-                    stage.setScene(scene);
-                    stage.show();
-                } catch (IOException ioException) { ioException.printStackTrace(); }
+
+        // TODO: make this better by having helper methods
+        if (isAdmin) {
+            if (!(username.isEmpty() || password.isEmpty())) {
+                if ( adminCredentials.containsKey(username) && password.equals(adminCredentials.get(username)) ){
+                    System.out.println("login good");
+                    try {
+//                        root = isAdmin ? FXMLLoader.load(getClass().getResource("GUI.fxml")) : FXMLLoader.load(getClass().getResource("AdminLibrary.fxml"));
+                        root = FXMLLoader.load(getClass().getResource("AdminLibrary.fxml"));
+                        stage = (Stage)((Node) event.getSource()).getScene().getWindow();
+                        scene = new Scene(root);
+                        stage.setScene(scene);
+                        stage.show();
+                    } catch (IOException ioException) { ioException.printStackTrace(); }
+                }
             }
+        } else {
+            if (!(username.isEmpty() || password.isEmpty())) {
+                if ( memberCredentials.containsKey(username) && password.equals(memberCredentials.get(username)) ){
+                    System.out.println("login good");
+                    try {
+//                        root = isAdmin ? FXMLLoader.load(getClass().getResource("GUI.fxml")) : FXMLLoader.load(getClass().getResource("AdminLibrary.fxml"));
+                        root = FXMLLoader.load(getClass().getResource("GUI.fxml"));
+                        stage = (Stage)((Node) event.getSource()).getScene().getWindow();
+                        scene = new Scene(root);
+                        stage.setScene(scene);
+                        stage.show();
+                    } catch (IOException ioException) { ioException.printStackTrace(); }
+                }
+            }
+
         }
+
     }
 
     @FXML
@@ -111,11 +140,33 @@ public class Controller {
         String username = createUser.getText();
         String password = createPassword.getText();
 
-        if (!(username.isEmpty() || password.isEmpty())) {
-            userCredentials.put(username,password);
+
+        if (!(username.isEmpty()) || password.isEmpty()) {
+            if (isAdmin) {
+                adminCredentials.put(username, password);
+            } else {
+                memberCredentials.put(username, password);
+            }
         }
+//        if (isAdmin) {
+//            if (!(username.isEmpty() || password.isEmpty())) {
+//                adminCredentials.put(username,password);
+//            } else {
+//                memberCredentials.put(username,password);
+//            }
+//        }
     }
 
+    @FXML
+    public void changeUser(ActionEvent event) {
+
+        isAdmin = !isAdmin;
+        String titledPaneText = isAdmin ? "Admin Login":"Member Login";
+        String changeUserButtonText = isAdmin ? "Change to Member":"Change to Admin";
+        titledPane.setText(titledPaneText);
+        changeUserButton.setText(changeUserButtonText);
+
+    }
 
     @FXML
     public void bookSelected() {
@@ -182,5 +233,17 @@ public class Controller {
 
     }
 
+
+//    private void loadScene(String fxmlFileName, ActionEvent event) {
+//
+//        try {
+//            root = FXMLLoader.load(getClass().getResource("GUI.fxml"));
+//            stage = (Stage)((Node) event.getSource()).getScene().getWindow();
+//            scene = new Scene(root);
+//            stage.setScene(scene);
+//            stage.show();
+//        } catch (IOException ioException) { ioException.printStackTrace(); }
+//    }
+//
 
 }
