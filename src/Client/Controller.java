@@ -31,10 +31,6 @@ public class Controller {
     private Parent root;
     private boolean isAdmin = false;
 
-//    Parent libraryGUI;
-//    Parent landingGUI;
-
-
     // start member fxml
     @FXML
     Button uniqueBook;
@@ -68,6 +64,8 @@ public class Controller {
     // end create/login fxml
 
 
+
+
     Client client;
     ObjectOutputStream objectOutputStream;
     Inventory clientSideInventory;
@@ -80,13 +78,6 @@ public class Controller {
         clientSideInventory = new Inventory();
         memberCredentials = new HashMap<>();
         adminCredentials = new HashMap<>();
-
-        // find landing and library GUI .fxml files
-//        try {
-//            libraryGUI = FXMLLoader.load(getClass().getResource("GUI.fxml"));
-//            landingGUI = FXMLLoader.load(getClass().getResource("LoginPage.fxml"));
-//        } catch (IOException ioe) {ioe.printStackTrace();}
-
 
         try {
             objectOutputStream = new ObjectOutputStream(client.clientSocket.getOutputStream());
@@ -107,7 +98,6 @@ public class Controller {
                 if ( adminCredentials.containsKey(username) && password.equals(adminCredentials.get(username)) ){
                     System.out.println("login good");
                     try {
-//                        root = isAdmin ? FXMLLoader.load(getClass().getResource("GUI.fxml")) : FXMLLoader.load(getClass().getResource("AdminLibrary.fxml"));
                         root = FXMLLoader.load(getClass().getResource("AdminLibrary.fxml"));
                         stage = (Stage)((Node) event.getSource()).getScene().getWindow();
                         scene = new Scene(root);
@@ -121,7 +111,6 @@ public class Controller {
                 if ( memberCredentials.containsKey(username) && password.equals(memberCredentials.get(username)) ){
                     System.out.println("login good");
                     try {
-//                        root = isAdmin ? FXMLLoader.load(getClass().getResource("GUI.fxml")) : FXMLLoader.load(getClass().getResource("AdminLibrary.fxml"));
                         root = FXMLLoader.load(getClass().getResource("GUI.fxml"));
                         stage = (Stage)((Node) event.getSource()).getScene().getWindow();
                         scene = new Scene(root);
