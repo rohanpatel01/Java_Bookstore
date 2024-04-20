@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+import java.awt.*;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
@@ -70,17 +71,26 @@ public class Controller {
 
     @FXML
     public void loginButton() {
+
+        String username = loginUser.getText();
+        String password = loginPassword.getText();
         System.out.println("login button pressed");
+        if (username.isEmpty() || password.isEmpty()) {
+            System.out.println("cannot do action");
+
+        } else if (userCredentials.containsKey(username) && (password.equals(userCredentials.get(username)))){
+            System.out.println("login successful");
+        }
     }
 
     @FXML
     public void signupButton() {
         String username = createUser.getText();
-        if (username.equals("x")){
-            Platform.runLater(() -> {
-                createUser.setText("changed!");
-                System.out.println("changed createUser text");
-            });
+        String password = createPassword.getText();
+        System.out.println("sign up button pressed");
+        if (!(username.isEmpty() || password.isEmpty())) {
+            userCredentials.put(username,password);
+            System.out.println("credentials added");
         }
     }
 
