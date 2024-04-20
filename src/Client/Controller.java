@@ -3,8 +3,15 @@ package Client;
 import Shared.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.event.ActionEvent;
+
+
+import javafx.scene.Node;
+
+
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -20,6 +27,10 @@ public class Controller {
     private Stage stage;
     private Scene scene;
     private Parent root;
+
+//    Parent libraryGUI;
+//    Parent landingGUI;
+
 
     // start member fxml
     @FXML
@@ -62,6 +73,12 @@ public class Controller {
         clientSideInventory = new Inventory();
         userCredentials = new HashMap<>();
 
+        // find landing and library GUI .fxml files
+//        try {
+//            libraryGUI = FXMLLoader.load(getClass().getResource("GUI.fxml"));
+//            landingGUI = FXMLLoader.load(getClass().getResource("LoginPage.fxml"));
+//        } catch (IOException ioe) {ioe.printStackTrace();}
+
 
         try {
             objectOutputStream = new ObjectOutputStream(client.clientSocket.getOutputStream());
@@ -70,16 +87,22 @@ public class Controller {
     }
 
     @FXML
-    public void loginButton() {
+    public void loginButton(ActionEvent event) {
 
         String username = loginUser.getText();
         String password = loginPassword.getText();
-        System.out.println("login button pressed");
-        if (username.isEmpty() || password.isEmpty()) {
-            System.out.println("cannot do action");
-
-        } else if (userCredentials.containsKey(username) && (password.equals(userCredentials.get(username)))){
-            System.out.println("login successful");
+        System.out.println("login button pressed ");
+        if (!(username.isEmpty() || password.isEmpty())) {
+            if ( userCredentials.containsKey(username) && password.equals(userCredentials.get(username)) ){
+                System.out.println("login good");
+                try {
+                    root = FXMLLoader.load(getClass().getResource("GUI.fxml"));
+                    stage = (Stage)((Node) event.getSource()).getScene().getWindow();
+                    scene = new Scene(root);
+                    stage.setScene(scene);
+                    stage.show();
+                } catch (IOException ioException) { ioException.printStackTrace(); }
+            }
         }
     }
 
@@ -87,10 +110,9 @@ public class Controller {
     public void signupButton() {
         String username = createUser.getText();
         String password = createPassword.getText();
-        System.out.println("sign up button pressed");
+
         if (!(username.isEmpty() || password.isEmpty())) {
             userCredentials.put(username,password);
-            System.out.println("credentials added");
         }
     }
 
