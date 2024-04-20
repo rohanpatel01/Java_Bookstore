@@ -1,7 +1,6 @@
 package Client;
 
 import Shared.*;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -17,33 +16,18 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.stage.Stage;
 
-import javax.swing.*;
-import java.awt.*;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Controller {
+public class LoginController {
 
     private Stage stage;
     private Scene scene;
     private Parent root;
     private boolean isAdmin = false;
 
-    // start member fxml
-    @FXML
-    Button uniqueBook;
-    @FXML
-    Button uniqueMovie;
-    @FXML
-    Button uniqueAudiobook;
-    @FXML
-    Button uniqueGame;
-    // end member fxml
-
-
-    // start create/login fxml
     @FXML
     TitledPane titledPane;
     @FXML
@@ -61,28 +45,24 @@ public class Controller {
     @FXML
     Button changeUserButton;
 
-    // end create/login fxml
 
-
-
-
-    Client client;
-    ObjectOutputStream objectOutputStream;
-    Inventory clientSideInventory;
+//    Client client;
+//    ObjectOutputStream objectOutputStream;
+//    Inventory clientSideInventory;
     Map<String, String> memberCredentials;
     Map<String, String> adminCredentials;
 
-    public Controller() {
-        client = new Client();
-        client.setupNetworking();
-        clientSideInventory = new Inventory();
+    public LoginController() {
+//        client = new Client();
+//        client.setupNetworking();
+//        clientSideInventory = new Inventory();
         memberCredentials = new HashMap<>();
         adminCredentials = new HashMap<>();
 
-        try {
-            objectOutputStream = new ObjectOutputStream(client.clientSocket.getOutputStream());
-        } catch (IOException ioException) { ioException.printStackTrace(); }
-        System.out.println("Contoller setup networking");
+//        try {
+//            objectOutputStream = new ObjectOutputStream(client.clientSocket.getOutputStream());
+//        } catch (IOException ioException) { ioException.printStackTrace(); }
+//        System.out.println("Contoller setup networking");
     }
 
     @FXML
@@ -111,7 +91,7 @@ public class Controller {
                 if ( memberCredentials.containsKey(username) && password.equals(memberCredentials.get(username)) ){
                     System.out.println("login good");
                     try {
-                        root = FXMLLoader.load(getClass().getResource("GUI.fxml"));
+                        root = FXMLLoader.load(getClass().getResource("LoginGUI.fxml"));
                         stage = (Stage)((Node) event.getSource()).getScene().getWindow();
                         scene = new Scene(root);
                         stage.setScene(scene);
@@ -137,13 +117,6 @@ public class Controller {
                 memberCredentials.put(username, password);
             }
         }
-//        if (isAdmin) {
-//            if (!(username.isEmpty() || password.isEmpty())) {
-//                adminCredentials.put(username,password);
-//            } else {
-//                memberCredentials.put(username,password);
-//            }
-//        }
     }
 
     @FXML
@@ -157,70 +130,6 @@ public class Controller {
 
     }
 
-    @FXML
-    public void bookSelected() {
-        System.out.println("book selected");
-        Book book = new Book("Glass Castle", "good book", "J. Walls", 288);
-        try {
-            objectOutputStream.writeObject(book);
-            objectOutputStream.flush();
-
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
-
-    }
-
-    @FXML
-    public void gameSelected() {
-        System.out.println("Game selected");
-        System.out.println("controller socket: " + client.clientSocket);
-
-        Game game = new Game("League of Legends", "try to have fun", "Riot");
-
-        try {
-            objectOutputStream.writeObject(game);
-            objectOutputStream.flush();
-
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
-
-    }
-
-    @FXML
-    public void movieSelected() {
-        System.out.println("Movie selected");
-
-        Movie movie = new Movie("Your Name", "Great movie", "1:26:00", "Makoto Shinkai");
-
-        System.out.println("controller socket: " + client.clientSocket);
-        try {
-            objectOutputStream.writeObject(movie);
-            objectOutputStream.flush();
-
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
-
-    }
-
-    @FXML
-    public void audiobookSelected() {
-        System.out.println("Audiobook selected");
-
-        AudioBook audioBook = new AudioBook("AtomicHabits_audiobook", "good self help", "narrator for atomic habits");
-
-        System.out.println("controller socket: " + client.clientSocket);
-        try {
-            objectOutputStream.writeObject(audioBook);
-            objectOutputStream.flush();
-
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
-
-    }
 
 
 //    private void loadScene(String fxmlFileName, ActionEvent event) {
