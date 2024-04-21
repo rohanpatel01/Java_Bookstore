@@ -17,7 +17,6 @@ import javafx.scene.control.TitledPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,22 +46,13 @@ public class LoginController {
 
 
 //    Client client;
-//    ObjectOutputStream objectOutputStream;
-//    Inventory clientSideInventory;
     Map<String, String> memberCredentials;
     Map<String, String> adminCredentials;
 
     public LoginController() {
-//        client = new Client();
-//        client.setupNetworking();
-//        clientSideInventory = new Inventory();
         memberCredentials = new HashMap<>();
         adminCredentials = new HashMap<>();
 
-//        try {
-//            objectOutputStream = new ObjectOutputStream(client.clientSocket.getOutputStream());
-//        } catch (IOException ioException) { ioException.printStackTrace(); }
-//        System.out.println("Contoller setup networking");
     }
 
     @FXML
@@ -83,6 +73,7 @@ public class LoginController {
                         scene = new Scene(root);
                         stage.setScene(scene);
                         stage.show();
+                        System.out.println("show admin library");
                     } catch (IOException ioException) { ioException.printStackTrace(); }
                 }
             }
@@ -91,11 +82,12 @@ public class LoginController {
                 if ( memberCredentials.containsKey(username) && password.equals(memberCredentials.get(username)) ){
                     System.out.println("login good");
                     try {
-                        root = FXMLLoader.load(getClass().getResource("LoginGUI.fxml"));
+                        root = FXMLLoader.load(getClass().getResource("MemberLibrary.fxml"));
                         stage = (Stage)((Node) event.getSource()).getScene().getWindow();
                         scene = new Scene(root);
                         stage.setScene(scene);
                         stage.show();
+                        System.out.println("show member library");
                     } catch (IOException ioException) { ioException.printStackTrace(); }
                 }
             }
@@ -131,17 +123,5 @@ public class LoginController {
     }
 
 
-
-//    private void loadScene(String fxmlFileName, ActionEvent event) {
-//
-//        try {
-//            root = FXMLLoader.load(getClass().getResource("GUI.fxml"));
-//            stage = (Stage)((Node) event.getSource()).getScene().getWindow();
-//            scene = new Scene(root);
-//            stage.setScene(scene);
-//            stage.show();
-//        } catch (IOException ioException) { ioException.printStackTrace(); }
-//    }
-//
 
 }

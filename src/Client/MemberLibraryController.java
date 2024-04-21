@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 
 import java.io.IOException;
+//import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 
@@ -12,20 +13,8 @@ public class MemberLibraryController {
 
     Client client;
     ObjectOutputStream objectOutputStream;
+//    ObjectInputStream objectInputStream;
     Inventory clientSideInventory;
-
-
-    public MemberLibraryController() {
-        client = new Client();
-        client.setupNetworking();
-        clientSideInventory = new Inventory();
-
-        try {
-            objectOutputStream = new ObjectOutputStream(client.clientSocket.getOutputStream());
-        } catch (IOException ioException) { ioException.printStackTrace(); }
-        System.out.println("Contoller setup networking");
-    }
-
 
     @FXML
     Button uniqueBook;
@@ -35,6 +24,21 @@ public class MemberLibraryController {
     Button uniqueAudiobook;
     @FXML
     Button uniqueGame;
+
+    public MemberLibraryController() {
+        client = new Client();
+        client.setupNetworking();
+        clientSideInventory = new Inventory();
+        System.out.println("member socket created");
+
+        try {
+            objectOutputStream = new ObjectOutputStream(client.clientSocket.getOutputStream());
+//            objectInputStream = new ObjectInputStream(client.clientSocket.getInputStream());
+        } catch (IOException ioException) { ioException.printStackTrace(); }
+        System.out.println("Contoller setup networking");
+    }
+
+
 
 
     @FXML

@@ -3,6 +3,7 @@ package Server.connection;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Map;
 
 import Shared.*;
@@ -17,8 +18,10 @@ public class Server {
 
     private void setupNetworking() {
         Object objectRecieved;
+        ObjectOutputStream objectOutputStream;
         ObjectInputStream objectInputStream;
         Socket clientSocket;
+        ArrayList<Socket> clientList = new ArrayList<>();
 
         PrintWriter writer = null;
         BufferedReader reader = null;
@@ -29,11 +32,15 @@ public class Server {
             ServerSocket server = new ServerSocket(1024);
             while (true) {
                 clientSocket = server.accept();
+                clientList.add(clientSocket);
                 System.out.println("client connected");
 
+                objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
+                objectOutputStream.flush(); // so stops blocking
                 objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
 
-                Thread t = new Thread(new ClientHandler(clientSocket, objectInputStream));
+//                objectInputStream = new ObjectInputStream(client.clientSocket.getInputStream());
+                Thread t = new Thread(new ClientHandler(clientSocket, objectOutputStream, objectInputStream)); //, objectOutputStream
                 t.start();
             }
         } catch (IOException ioe) {
@@ -44,12 +51,17 @@ public class Server {
     class ClientHandler implements Runnable {
 
         private Socket clientSocket;
+        private ObjectOutputStream objectOutputStream;
         private ObjectInputStream objectInputStream;
         private Object objectRecieved;
 
 
-        ClientHandler(Socket clientSocket, ObjectInputStream objectInputStream) {
+        ClientHandler(Socket clientSocket, ObjectOutputStream objectOutputStream, ObjectInputStream objectInputStream ) { // , ObjectOutputStream objectOutputStream
             this.clientSocket = clientSocket;
+
+            this.objectOutputStream = objectOutputStream;
+
+
             this.objectInputStream = objectInputStream;
 
 
@@ -72,31 +84,7 @@ public class Server {
                         if ((objectRecieved = objectInputStream.readObject()) != null) {
 
                             addToInventory(objectRecieved);
-
-                            for (String keys : Inventory.bookList.keySet() )
-                            {
-                                System.out.println(keys + ":"+ Inventory.bookList.get(keys));
-                            }
-                            System.out.println("============================================");
-
-                            for (String keys : Inventory.movieList.keySet() )
-                            {
-                                System.out.println(keys + ":"+ Inventory.movieList.get(keys));
-                            }
-                            System.out.println("============================================");
-
-
-                            for (String keys : Inventory.gameList.keySet() )
-                            {
-                                System.out.println(keys + ":"+ Inventory.gameList.get(keys));
-                            }
-                            System.out.println("============================================");
-
-                            for (String keys : Inventory.audiobookList.keySet() )
-                            {
-                                System.out.println(keys + ":"+ Inventory.audiobookList.get(keys));
-                            }
-                            System.out.println("============================================");
+                            printInventory();
 
                         }
                     }
@@ -107,6 +95,10 @@ public class Server {
 
             objectReaderThread.start();
         }
+    }
+
+    private void sendToAllClients(Object object) {
+
     }
 
 
@@ -128,7 +120,33 @@ public class Server {
 
     }
 
+    private void printInventory() {
+        for (String keys : Inventory.bookList.keySet() )
+        {
+            System.out.println(keys + ":"+ Inventory.bookList.get(keys));
+        }
+        System.out.println("============================================");
 
+        for (String keys : Inventory.movieList.keySet() )
+        {
+            System.out.println(keys + ":"+ Inventory.movieList.get(keys));
+        }
+        System.out.println("============================================");
+
+
+        for (String keys : Inventory.gameList.keySet() )
+        {
+            System.out.println(keys + ":"+ Inventory.gameList.get(keys));
+        }
+        System.out.println("============================================");
+
+        for (String keys : Inventory.audiobookList.keySet() )
+        {
+            System.out.println(keys + ":"+ Inventory.audiobookList.get(keys));
+        }
+        System.out.println("============================================");
+
+    }
 
 
 
