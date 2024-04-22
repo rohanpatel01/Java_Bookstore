@@ -36,8 +36,8 @@ public class Server {
                 System.out.println("client connected");
 
                 objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
-                objectOutputStream.flush(); // so stops blocking
                 objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
+//                objectOutputStream.flush(); // so stops blocking
 
 //                objectInputStream = new ObjectInputStream(client.clientSocket.getInputStream());
                 Thread t = new Thread(new ClientHandler(clientSocket, objectOutputStream, objectInputStream)); //, objectOutputStream
@@ -51,18 +51,18 @@ public class Server {
     class ClientHandler implements Runnable {
 
         private Socket clientSocket;
-        private ObjectOutputStream objectOutputStream;
         private ObjectInputStream objectInputStream;
+        private ObjectOutputStream objectOutputStream;
         private Object objectRecieved;
 
 
         ClientHandler(Socket clientSocket, ObjectOutputStream objectOutputStream, ObjectInputStream objectInputStream ) { // , ObjectOutputStream objectOutputStream
             this.clientSocket = clientSocket;
 
+            this.objectInputStream = objectInputStream;
             this.objectOutputStream = objectOutputStream;
 
 
-            this.objectInputStream = objectInputStream;
 
 
             BufferedReader reader;

@@ -22,11 +22,11 @@ public class Client {
      public void setupNetworking() {
         try {
             clientSocket = new Socket("11.21.22.194", 1024);
-            clientSocket.getOutputStream().flush(); // so server can connect?
+//            clientSocket.getOutputStream().flush(); // so server can connect?
             System.out.println("Client Socket Created: " + clientSocket);
 
-            writer = new PrintWriter(clientSocket.getOutputStream());
-            reader = new BufferedReader((new InputStreamReader(clientSocket.getInputStream())));
+//            writer = new PrintWriter(clientSocket.getOutputStream());
+//            reader = new BufferedReader((new InputStreamReader(clientSocket.getInputStream())));
 
             Thread readerThread = new Thread(() -> {
                 String message;

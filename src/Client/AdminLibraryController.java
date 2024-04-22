@@ -12,8 +12,8 @@ import java.io.ObjectInputStream;
 public class AdminLibraryController {
 
     Client client;
-    ObjectOutputStream objectOutputStream;
     ObjectInputStream objectInputStream;
+    ObjectOutputStream objectOutputStream;
     Inventory clientSideInventory;
     Object objectRecieved;
 
@@ -39,9 +39,10 @@ public class AdminLibraryController {
             // maybe put the input stream in another thread and do that
 
             objectOutputStream = new ObjectOutputStream(client.clientSocket.getOutputStream());
-//            objectOutputStream.flush();
-
             objectInputStream = new ObjectInputStream(client.clientSocket.getInputStream());
+//            objectOutputStream.flush();
+            System.out.println("admin");
+
 
         } catch (IOException ioException) { ioException.printStackTrace(); }
         System.out.println("Contoller setup networking");

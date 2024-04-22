@@ -6,6 +6,7 @@ import javafx.scene.control.Button;
 
 import java.io.IOException;
 //import java.io.ObjectInputStream;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 
@@ -13,7 +14,7 @@ public class MemberLibraryController {
 
     Client client;
     ObjectOutputStream objectOutputStream;
-//    ObjectInputStream objectInputStream;
+    ObjectInputStream objectInputStream;
     Inventory clientSideInventory;
 
     @FXML
@@ -33,7 +34,9 @@ public class MemberLibraryController {
 
         try {
             objectOutputStream = new ObjectOutputStream(client.clientSocket.getOutputStream());
-//            objectInputStream = new ObjectInputStream(client.clientSocket.getInputStream());
+            objectInputStream = new ObjectInputStream(client.clientSocket.getInputStream());
+
+            System.out.println("member");
         } catch (IOException ioException) { ioException.printStackTrace(); }
         System.out.println("Contoller setup networking");
     }
