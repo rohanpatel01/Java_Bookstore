@@ -61,7 +61,7 @@ public class AdminLibraryController {
                 while (true) {
                     if ((objectRecievedFromServer = (objectInputStream.readObject())) != null ) {
                         System.out.println("admin recieved object from server");
-                        inventory.addToInventory(objectRecievedFromServer);
+//                        inventory.addToInventory(objectRecievedFromServer); // TODO: comment this back in after member works
                         System.out.println("member library");
                         inventory.printInventory();
 
@@ -81,7 +81,7 @@ public class AdminLibraryController {
 
     public void AddBook() {
         System.out.println("book selected");
-        Book book = new Book("Glass Castle", "good book", "J. Walls", 288);
+        Book book = new Book("Glass Castle", "good book", "J. Walls", 288, 1);
         try {
             objectOutputStream.writeObject(book);
             objectOutputStream.flush();

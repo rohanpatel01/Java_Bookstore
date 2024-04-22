@@ -17,10 +17,10 @@ public class Inventory {
 //    }
 
 //    public static Map<ItemType, Map<Integer, ?>> inventoryList; // want this to be static but cannot access
-    public static Map<String, Book > bookList;
-    public static Map<String, Movie > movieList;
-    public static Map<String, Game > gameList;
-    public static Map<String, AudioBook > audiobookList;
+    public Map<String, Book > bookList;
+    public Map<String, Movie > movieList;
+    public Map<String, Game > gameList;
+    public Map<String, AudioBook > audiobookList;
 
     public Inventory() {
         bookList = new HashMap<>();
@@ -29,56 +29,56 @@ public class Inventory {
         audiobookList = new HashMap<>();
     }
 
-    public void addToInventory(Object objectRecieved) {
-
-
-        if (objectRecieved instanceof Book) {
-            addBook((Book) objectRecieved);
-
-        } else if (objectRecieved instanceof Movie) {
-            addMovie((Movie) objectRecieved);
-
-        } else if (objectRecieved instanceof Game) {
-            addGame((Game) objectRecieved);
-
-        } else if (objectRecieved instanceof AudioBook) {
-            addAudiobook((AudioBook) objectRecieved);
-        }
-
-    }
+//    public void addToInventory(Object objectRecieved) {
+//
+//
+//        if (objectRecieved instanceof Book) {
+//            addBook((Book) objectRecieved);
+//
+//        } else if (objectRecieved instanceof Movie) {
+//            addMovie((Movie) objectRecieved);
+//
+//        } else if (objectRecieved instanceof Game) {
+//            addGame((Game) objectRecieved);
+//
+//        } else if (objectRecieved instanceof AudioBook) {
+//            addAudiobook((AudioBook) objectRecieved);
+//        }
+//
+//    }
 
 
     public void printInventory() {
-        for (String keys : Inventory.bookList.keySet() )
+        for (String keys : bookList.keySet() )
         {
-            System.out.println(keys + ":"+ Inventory.bookList.get(keys));
+            System.out.println(keys + ":"+ bookList.get(keys));
         }
-        System.out.println("============================================");
-
-        for (String keys : Inventory.movieList.keySet() )
-        {
-            System.out.println(keys + ":"+ Inventory.movieList.get(keys));
-        }
-        System.out.println("============================================");
-
-
-        for (String keys : Inventory.gameList.keySet() )
-        {
-            System.out.println(keys + ":"+ Inventory.gameList.get(keys));
-        }
-        System.out.println("============================================");
-
-        for (String keys : Inventory.audiobookList.keySet() )
-        {
-            System.out.println(keys + ":"+ Inventory.audiobookList.get(keys));
-        }
-        System.out.println("============================================");
+        // TODO: uncomment below when ready to test / look at rest of objects
+//        System.out.println("============================================");
+//
+//        for (String keys : movieList.keySet() )
+//        {
+//            System.out.println(keys + ":"+ movieList.get(keys));
+//        }
+//        System.out.println("============================================");
+//
+//
+//        for (String keys : gameList.keySet() )
+//        {
+//            System.out.println(keys + ":"+ gameList.get(keys));
+//        }
+//        System.out.println("============================================");
+//
+//        for (String keys : audiobookList.keySet() )
+//        {
+//            System.out.println(keys + ":"+ audiobookList.get(keys));
+//        }
+//        System.out.println("============================================");
 
     }
 
-    public void addBook(Book item) {
+    public void updateBook(Book item) {
         if (bookList.get(item.title) != null) { // if book already in inventory
-//            bookList.put(item.title, new ArrayList<>());
 
             // just update numCopies to be sum of current and new item numCopies
             // the client and server will handle if we are able to or not
@@ -87,7 +87,6 @@ public class Inventory {
 
         } else { // new book
             bookList.put(item.title, item);
-//            bookList.get(item.title).add(item);
         }
 
     }

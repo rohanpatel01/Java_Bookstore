@@ -32,10 +32,11 @@ public abstract class LibraryItem implements Serializable {
         numCopies = 0;
     }
 
-    public LibraryItem(String title, String summaryDescription) {
+    public LibraryItem(String title, String summaryDescription, int numCopies) {
         this();
         this.title = title;
         this.summaryDescription = summaryDescription;
+        this.numCopies = numCopies;
     }
 
 }

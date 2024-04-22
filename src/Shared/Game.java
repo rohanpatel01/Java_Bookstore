@@ -4,7 +4,7 @@ public class Game extends LibraryItem {
 
     private String developerStudio;
     public Game (String title, String summaryDescription, String developerStudio) {
-        super(title, summaryDescription);
+//        super(title, summaryDescription);
 //        this.itemID = LibraryItem.LIBRARY_ID;
 //        LibraryItem.LIBRARY_ID += 1;
 

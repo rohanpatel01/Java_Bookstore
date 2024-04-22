@@ -46,16 +46,32 @@ public class MemberLibraryController {
         } catch (IOException ioException) { ioException.printStackTrace(); }
 
         Thread readObjectFromServerThread = new Thread(() -> {
-            try {
-                if ((objectRecievedFromServer = objectInputStream.readObject()) != null) {
-                   inventory.addToInventory(objectRecievedFromServer);
-                    System.out.println("member library");
-                   inventory.printInventory();
+            while (true) {
+                try {
+                    if ((objectRecievedFromServer = objectInputStream.readObject()) != null) {
+
+                    // just update number to whatever it is
+//                   inventory.addToInventory(objectRecievedFromServer);
+                    // all we have to do is update the numCopies of the object
+                    // but didn't add the object to our inventory yet
+                    // need to update our cart and send object to server
+                    // then on server getback we update our own inventory
+                    // dont need to distinguish, just update whatever to our thing,
+                        // if not in client inventory add it
+                        // if is then just change the numCopies number
+                        // if numCopies != 0 and same title as we wanted then we add one to our cart?
+//                    clientHandleObject(objectRecievedFromServer);
+//                    inventory.updateBook((Book) objectRecievedFromServer);
+                        System.out.println("Object recieved: " + objectRecievedFromServer);
+//                    System.out.println("object recieved from server");
+//                    System.out.println("member library");
+                        inventory.printInventory();
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
                 }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
             }
         });
         readObjectFromServerThread.start();
@@ -86,8 +102,8 @@ public class MemberLibraryController {
     @FXML
     public void bookSelected() {
         System.out.println("book selected");
-        Book book = new Book("Glass Castle", "good book", "J. Walls", 288);
-        book.numCopies = 1;
+        Book book = new Book("Glass Castle", "good book", "J. Walls", 288, -1);
+//        book.numCopies = -1; // testing to borrow items
         try {
             objectOutputStream.writeObject(book);
             objectOutputStream.flush();

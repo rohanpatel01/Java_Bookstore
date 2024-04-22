@@ -6,9 +6,9 @@ public class Book extends LibraryItem implements Serializable {
     public int numPages;
     public String author;
 
-     public Book(String title, String summaryDescription, String author, int numPages) {
+     public Book(String title, String summaryDescription, String author, int numPages, int numCopies) {
 
-         super(title, summaryDescription);
+         super(title, summaryDescription, numCopies);
 
          // only increment the library ID if one with same title does not already exist
 //         if (!Inventory.bookList.containsKey(title)) {

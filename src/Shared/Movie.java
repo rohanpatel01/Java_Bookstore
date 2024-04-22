@@ -7,7 +7,7 @@ public class Movie extends LibraryItem {
 
     public Movie (String title, String summaryDescription, String movieRunTime, String director) {
 
-        super(title, summaryDescription);
+//        super(title, summaryDescription);
 //        this.itemID = LibraryItem.LIBRARY_ID;
 //        LibraryItem.LIBRARY_ID += 1;
 

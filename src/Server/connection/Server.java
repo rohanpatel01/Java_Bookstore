@@ -26,6 +26,9 @@ public class Server {
         clientList = new ArrayList<>();
         inventory = new Inventory();
 
+        Book starterBook = new Book("Glass Castle", "good book", "J. Walls", 288, 5);
+        inventory.bookList.put(starterBook.title, starterBook);
+
         try {
             ServerSocket server = new ServerSocket(1024);
             while (true) {
@@ -64,11 +67,11 @@ public class Server {
                     while (true) { // should have a while true to recieve objects?
                         if ((objectRecieved = objectInputStream.readObject()) != null) {
 
-
-                            inventory.addToInventory(objectRecieved);
+                            handleObject(objectRecieved, objectOutputStream);
+//                            inventory.addToInventory(objectRecieved);
 //                            addToInventory(objectRecieved);
                             inventory.printInventory();
-                            sendToAllClients(objectRecieved, objectOutputStream);
+//                            sendToAllClients(objectRecieved, objectOutputStream);
 
                         }
                     }
@@ -80,6 +83,61 @@ public class Server {
             objectReaderThread.start();
         }
     }
+
+    // see how it goes but might be able to put this in InventoryClass if can handle differently
+    // both sides just need to update their own thing depending on if numCopies + or -
+    // so should be able to share it, try it after tho
+    private void handleObject(Object objectReceived, ObjectOutputStream objectOutputStream) {
+
+        if (objectReceived instanceof Book) {
+
+            // if book does not exist in server inventory - add the item
+            if (inventory.bookList.get(((Book) objectReceived).title) == null) {
+
+                inventory.updateBook((Book) objectReceived);
+//                inventory.bookList.put(((Book) objectReceived).title, (Book) objectReceived);
+
+            } else { // item is in inventory, see how to update depending on if adding or removing
+
+                if (((Book) objectReceived).numCopies > 0) { // adding item to inventory
+
+//                    inventory.bookList.get(((Book) objectReceived).title).numCopies += ((Book) objectReceived).numCopies;
+                    inventory.updateBook((Book) objectReceived);
+
+                    // send updated book back to all clients so they can update their own inventories
+                   // TODO: uncomment this when testing admin to add items
+//                    sendToAllClients(inventory.bookList.get(((Book) objectReceived).title) , objectOutputStream);
+
+                } else { // attempt to borrow that many copies of book
+                    System.out.println("decrease item");
+                    int currentBooksInInventory =(inventory.bookList.get(((Book) objectReceived).title).numCopies);
+
+                    // NOTE: summing them because now objectRecieved.numCopies is negative so (positive + (-number))
+                    if (  (currentBooksInInventory - Math.abs(((Book) objectReceived).numCopies)) >= 0  ) { // ((Book) objectReceived).numCopies) >= 0
+
+                        inventory.updateBook((Book) objectReceived);
+                        // send updated book back to all clients so they can update their own inventories
+                        sendToAllClients(inventory.bookList.get(((Book) objectReceived).title) , objectOutputStream);
+
+                    } else {
+                        System.out.println("cannot borrow item");
+                        // dont do anything if we cannot borrow item
+                    }
+
+                }
+
+            }
+
+
+
+
+
+        }
+
+        // TODO: handle different types of library items later
+
+    }
+
 
     private void sendToAllClients(Object object, ObjectOutputStream objectOutputStream) {
         Thread sendObjectToAllClientsAsync = new Thread(() -> {
@@ -98,23 +156,5 @@ public class Server {
         sendObjectToAllClientsAsync.start();
     }
 
-
-//    private void addToInventory(Object objectRecieved) {
-//
-//
-//        if (objectRecieved instanceof Book) {
-//            inventory.addBook((Book) objectRecieved);
-//
-//        } else if (objectRecieved instanceof Movie) {
-//            inventory.addMovie((Movie) objectRecieved);
-//
-//        } else if (objectRecieved instanceof Game) {
-//            inventory.addGame((Game) objectRecieved);
-//
-//        } else if (objectRecieved instanceof AudioBook) {
-//           inventory.addAudiobook((AudioBook) objectRecieved);
-//        }
-//
-//    }
 
 }
