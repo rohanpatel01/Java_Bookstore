@@ -51,18 +51,21 @@ public class AdminLibraryController {
         // create and start thread to listen for objects coming in from server
         Thread objectListenerThread = new Thread(() -> {
 
-            try {
-                objectInputStream = new ObjectInputStream(client.clientSocket.getInputStream());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+//            try {
+//                objectInputStream = new ObjectInputStream(client.clientSocket.getInputStream());
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
             // need while true?
             try {
-                if ((objectRecievedFromServer = (objectInputStream.readObject())) != null ) {
-                    System.out.println("admin recieved object from server");
-                    inventory.addToInventory(objectRecievedFromServer);
-                    System.out.println("member library");
-                    inventory.printInventory();
+                while (true) {
+                    if ((objectRecievedFromServer = (objectInputStream.readObject())) != null ) {
+                        System.out.println("admin recieved object from server");
+                        inventory.addToInventory(objectRecievedFromServer);
+                        System.out.println("member library");
+                        inventory.printInventory();
+
+                    }
 
                 }
             } catch (IOException e) {

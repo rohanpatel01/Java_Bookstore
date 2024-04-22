@@ -5,8 +5,8 @@ public class Game extends LibraryItem {
     private String developerStudio;
     public Game (String title, String summaryDescription, String developerStudio) {
         super(title, summaryDescription);
-        this.itemID = LibraryItem.LIBRARY_ID;
-        LibraryItem.LIBRARY_ID += 1;
+//        this.itemID = LibraryItem.LIBRARY_ID;
+//        LibraryItem.LIBRARY_ID += 1;
 
         this.itemType = "GAME";
         this.developerStudio = developerStudio;
@@ -14,7 +14,7 @@ public class Game extends LibraryItem {
 
     @Override
     public String toString() {
-        return (itemID + " - " +  itemType + " : " + title + " : " + summaryDescription);
+        return (  itemType + " : " + title + " : " + summaryDescription);
     }
 
 }

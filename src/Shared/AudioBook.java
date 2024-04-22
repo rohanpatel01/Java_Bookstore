@@ -6,8 +6,8 @@ public class AudioBook extends LibraryItem {
 
     public AudioBook(String title, String summaryDescription, String narrator ){
         super(title, summaryDescription);
-        this.itemID = LibraryItem.LIBRARY_ID;
-        LibraryItem.LIBRARY_ID += 1;
+//        this.itemID = LibraryItem.LIBRARY_ID;
+//        LibraryItem.LIBRARY_ID += 1;
 
         this.itemType = "AUDIOBOOK";
         this.narrator = narrator;
@@ -15,7 +15,7 @@ public class AudioBook extends LibraryItem {
 
     @Override
     public String toString() {
-        return (itemID + " - " +  itemType + " : " + title + " : " + summaryDescription);
+        return (  itemType + " : " + title + " : " + summaryDescription);
     }
 
 

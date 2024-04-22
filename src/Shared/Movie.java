@@ -8,8 +8,8 @@ public class Movie extends LibraryItem {
     public Movie (String title, String summaryDescription, String movieRunTime, String director) {
 
         super(title, summaryDescription);
-        this.itemID = LibraryItem.LIBRARY_ID;
-        LibraryItem.LIBRARY_ID += 1;
+//        this.itemID = LibraryItem.LIBRARY_ID;
+//        LibraryItem.LIBRARY_ID += 1;
 
         this.itemType = "MOVIE";
         this.movieRunTime = movieRunTime;
@@ -19,7 +19,7 @@ public class Movie extends LibraryItem {
 
     @Override
     public String toString() {
-        return (itemID + " - " +  itemType + " : " + title + " : " + summaryDescription);
+        return (  itemType + " : " + title + " : " + summaryDescription);
     }
 
 

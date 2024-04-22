@@ -28,6 +28,10 @@ public class MemberLibraryController {
     Button uniqueGame;
 
     public MemberLibraryController() {
+
+        // have message reader thread, server will send message to specific client if
+        // action cannot be fufilled and client should update GUI accordingly to tell user
+
         client = new Client();
         client.setupNetworking();
         inventory = new Inventory();
@@ -83,6 +87,7 @@ public class MemberLibraryController {
     public void bookSelected() {
         System.out.println("book selected");
         Book book = new Book("Glass Castle", "good book", "J. Walls", 288);
+        book.numCopies = 1;
         try {
             objectOutputStream.writeObject(book);
             objectOutputStream.flush();

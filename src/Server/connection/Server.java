@@ -54,14 +54,8 @@ public class Server {
 
         ClientHandler(Socket clientSocket, ObjectOutputStream objectOutputStream, ObjectInputStream objectInputStream ) { // , ObjectOutputStream objectOutputStream
             this.clientSocket = clientSocket;
-
             this.objectInputStream = objectInputStream;
             this.objectOutputStream = objectOutputStream;
-
-
-
-
-
         }
         public void run() {
 
@@ -69,6 +63,7 @@ public class Server {
                 try {
                     while (true) { // should have a while true to recieve objects?
                         if ((objectRecieved = objectInputStream.readObject()) != null) {
+
 
                             inventory.addToInventory(objectRecieved);
 //                            addToInventory(objectRecieved);

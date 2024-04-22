@@ -17,10 +17,10 @@ public class Inventory {
 //    }
 
 //    public static Map<ItemType, Map<Integer, ?>> inventoryList; // want this to be static but cannot access
-    public static Map<String, List<Book> > bookList;
-    public static Map<String, List<Movie> > movieList;
-    public static Map<String, List<Game> > gameList;
-    public static Map<String, List<AudioBook> > audiobookList;
+    public static Map<String, Book > bookList;
+    public static Map<String, Movie > movieList;
+    public static Map<String, Game > gameList;
+    public static Map<String, AudioBook > audiobookList;
 
     public Inventory() {
         bookList = new HashMap<>();
@@ -77,35 +77,43 @@ public class Inventory {
     }
 
     public void addBook(Book item) {
-        if (bookList.get(item.title) == null) {
-            bookList.put(item.title, new ArrayList<>());
+        if (bookList.get(item.title) != null) { // if book already in inventory
+//            bookList.put(item.title, new ArrayList<>());
+
+            // just update numCopies to be sum of current and new item numCopies
+            // the client and server will handle if we are able to or not
+            // ^^ they will only do so if the book in inventory will only be 0 or above, will never let go negative
+            bookList.get(item.title).numCopies += item.numCopies;
+
+        } else { // new book
+            bookList.put(item.title, item);
+//            bookList.get(item.title).add(item);
         }
-        bookList.get(item.title).add(item);
 
     }
 
     public void addMovie(Movie item) {
-        if (movieList.get(item.title) == null) {
-            movieList.put(item.title, new ArrayList<>());
-        }
-
-        movieList.get(item.title).add(item);
+//        if (movieList.get(item.title) == null) {
+//            movieList.put(item.title, new ArrayList<>());
+//        }
+//
+//        movieList.get(item.title).add(item);
     }
 
     public void addGame(Game item) {
-        if (gameList.get(item.title) == null) {
-            gameList.put(item.title, new ArrayList<>());
-        }
-
-        gameList.get(item.title).add(item);
+//        if (gameList.get(item.title) == null) {
+//            gameList.put(item.title, new ArrayList<>());
+//        }
+//
+//        gameList.get(item.title).add(item);
     }
 
     public void addAudiobook(AudioBook item) {
-        if (audiobookList.get(item.title) == null) {
-            audiobookList.put(item.title, new ArrayList<>());
-        }
-
-        audiobookList.get(item.title).add(item);
+//        if (audiobookList.get(item.title) == null) {
+//            audiobookList.put(item.title, new ArrayList<>());
+//        }
+//
+//        audiobookList.get(item.title).add(item);
     }
 
     // have more methods to checkout book, game, audiobook, movie?

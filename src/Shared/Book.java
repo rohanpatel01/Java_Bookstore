@@ -17,8 +17,8 @@ public class Book extends LibraryItem implements Serializable {
 //         }
 
          // make this only happen for books that are not already in list like ^^
-         this.itemID = LibraryItem.LIBRARY_ID;
-         LibraryItem.LIBRARY_ID += 1;
+//         this.itemID = LibraryItem.LIBRARY_ID;
+//         LibraryItem.LIBRARY_ID += 1;
 
          this.itemType = "BOOK";
          this.author = author;
@@ -26,6 +26,6 @@ public class Book extends LibraryItem implements Serializable {
     }
     @Override
     public String toString() {
-        return (itemID + " - " +  itemType + " : " + title + " : " + summaryDescription);
+        return (" (" + numCopies + ") " +  itemType + " : " + title + " : " + summaryDescription);
     }
 }
