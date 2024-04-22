@@ -8,6 +8,7 @@ import java.io.IOException;
 //import java.io.ObjectInputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MemberLibraryController {
@@ -17,6 +18,7 @@ public class MemberLibraryController {
     ObjectInputStream objectInputStream;
     Inventory inventory;
     Object objectRecievedFromServer;
+    ArrayList<Object> cart;
 
     @FXML
     Button uniqueBook;
@@ -32,7 +34,7 @@ public class MemberLibraryController {
         client = new Client();
         client.setupNetworking();
         inventory = new Inventory();
-
+        cart = new ArrayList<>();
 
         try {
             objectOutputStream = new ObjectOutputStream(client.clientSocket.getOutputStream());
@@ -46,7 +48,11 @@ public class MemberLibraryController {
                 try {
                     if ((objectRecievedFromServer = objectInputStream.readObject()) != null) {
 
-                        System.out.println("Reading object: " + objectRecievedFromServer);
+                        // TODO:  find better way to do this for all books, see if can have general thing in inventory,
+                        // TODO:  hard tho since server requires to sendAllClients where client does not need to do that
+                        if (objectRecievedFromServer instanceof Book) {
+                            inventory.bookList.put(((Book) objectRecievedFromServer).title, (Book) objectRecievedFromServer);
+                        }
                         inventory.printInventory();
                     }
                 } catch (IOException e) {

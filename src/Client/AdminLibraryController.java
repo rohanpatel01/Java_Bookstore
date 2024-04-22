@@ -34,35 +34,18 @@ public class AdminLibraryController {
 
         System.out.println("admin socket created");
 
-
         try {
-            // maybe put the input stream in another thread and do that
-
             objectOutputStream = new ObjectOutputStream(client.clientSocket.getOutputStream());
             objectInputStream = new ObjectInputStream(client.clientSocket.getInputStream());
-//            objectOutputStream.flush();
-            System.out.println("admin");
-
-
         } catch (IOException ioException) { ioException.printStackTrace(); }
-        System.out.println("Contoller setup networking");
-
 
         // create and start thread to listen for objects coming in from server
         Thread objectListenerThread = new Thread(() -> {
 
-//            try {
-//                objectInputStream = new ObjectInputStream(client.clientSocket.getInputStream());
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
-            // need while true?
             try {
                 while (true) {
                     if ((objectRecievedFromServer = (objectInputStream.readObject())) != null ) {
-                        System.out.println("admin recieved object from server");
-//                        inventory.addToInventory(objectRecievedFromServer); // TODO: comment this back in after member works
-                        System.out.println("member library");
+                        inventory.bookList.put(((Book) objectRecievedFromServer).title, (Book) objectRecievedFromServer);
                         inventory.printInventory();
 
                     }
