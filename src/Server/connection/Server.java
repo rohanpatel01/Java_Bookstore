@@ -68,10 +68,7 @@ public class Server {
                         if ((objectRecieved = objectInputStream.readObject()) != null) {
 
                             handleObject(objectRecieved, objectOutputStream);
-//                            inventory.addToInventory(objectRecieved);
-//                            addToInventory(objectRecieved);
                             inventory.printInventory();
-//                            sendToAllClients(objectRecieved, objectOutputStream);
 
                         }
                     }
@@ -84,9 +81,6 @@ public class Server {
         }
     }
 
-    // see how it goes but might be able to put this in InventoryClass if can handle differently
-    // both sides just need to update their own thing depending on if numCopies + or -
-    // so should be able to share it, try it after tho
     private void handleObject(Object objectReceived, ObjectOutputStream objectOutputStream) {
 
         if (objectReceived instanceof Book) {
@@ -95,18 +89,13 @@ public class Server {
             if (inventory.bookList.get(((Book) objectReceived).title) == null) {
 
                 inventory.updateBook((Book) objectReceived);
-//                inventory.bookList.put(((Book) objectReceived).title, (Book) objectReceived);
 
             } else { // item is in inventory, see how to update depending on if adding or removing
 
                 if (((Book) objectReceived).numCopies > 0) { // adding item to inventory
 
-//                    inventory.bookList.get(((Book) objectReceived).title).numCopies += ((Book) objectReceived).numCopies;
                     inventory.updateBook((Book) objectReceived);
-
-                    // send updated book back to all clients so they can update their own inventories
-                   // TODO: uncomment this when testing admin to add items
-//                    sendToAllClients(inventory.bookList.get(((Book) objectReceived).title) , objectOutputStream);
+                    sendToAllClients( inventory.bookList.get(((Book) objectReceived).title) , objectOutputStream);
 
                 } else { // attempt to borrow that many copies of book
                     System.out.println("decrease item");
@@ -116,22 +105,15 @@ public class Server {
                     if (  (currentBooksInInventory - Math.abs(((Book) objectReceived).numCopies)) >= 0  ) { // ((Book) objectReceived).numCopies) >= 0
 
                         inventory.updateBook((Book) objectReceived);
-                        // send updated book back to all clients so they can update their own inventories
-                        sendToAllClients(inventory.bookList.get(((Book) objectReceived).title) , objectOutputStream);
+                        sendToAllClients( inventory.bookList.get(((Book) objectReceived).title) , objectOutputStream);
 
                     } else {
                         System.out.println("cannot borrow item");
-                        // dont do anything if we cannot borrow item
                     }
 
                 }
 
             }
-
-
-
-
-
         }
 
         // TODO: handle different types of library items later
@@ -145,6 +127,8 @@ public class Server {
                 System.out.println(client.toString());
 
                 try {
+                    System.out.println("sending object:" + object);
+                    objectOutputStream.reset(); // need to reset or objects are not updated properly
                     objectOutputStream.writeObject(object);
                     objectOutputStream.flush();
                 } catch (IOException e) {

@@ -7,8 +7,6 @@ import java.util.List;
 
 public abstract class LibraryItem implements Serializable {
 
-    public static int LIBRARY_ID = 0;
-//    public int itemID;
     public String title;
     public String summaryDescription;
     public boolean isAvailable;
@@ -20,7 +18,6 @@ public abstract class LibraryItem implements Serializable {
     public String lastTimeCheckedOut; // see what type this has to be and how we can get time
     public int numCopies;
     public LibraryItem() {
-//        itemID = -999;
         title = "";
         summaryDescription = "";
         isAvailable = true;

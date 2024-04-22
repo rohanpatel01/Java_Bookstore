@@ -29,14 +29,10 @@ public class MemberLibraryController {
 
     public MemberLibraryController() {
 
-        // have message reader thread, server will send message to specific client if
-        // action cannot be fufilled and client should update GUI accordingly to tell user
-
         client = new Client();
         client.setupNetworking();
         inventory = new Inventory();
 
-        System.out.println("member socket created");
 
         try {
             objectOutputStream = new ObjectOutputStream(client.clientSocket.getOutputStream());
@@ -50,21 +46,7 @@ public class MemberLibraryController {
                 try {
                     if ((objectRecievedFromServer = objectInputStream.readObject()) != null) {
 
-                    // just update number to whatever it is
-//                   inventory.addToInventory(objectRecievedFromServer);
-                    // all we have to do is update the numCopies of the object
-                    // but didn't add the object to our inventory yet
-                    // need to update our cart and send object to server
-                    // then on server getback we update our own inventory
-                    // dont need to distinguish, just update whatever to our thing,
-                        // if not in client inventory add it
-                        // if is then just change the numCopies number
-                        // if numCopies != 0 and same title as we wanted then we add one to our cart?
-//                    clientHandleObject(objectRecievedFromServer);
-//                    inventory.updateBook((Book) objectRecievedFromServer);
-                        System.out.println("Object recieved: " + objectRecievedFromServer);
-//                    System.out.println("object recieved from server");
-//                    System.out.println("member library");
+                        System.out.println("Reading object: " + objectRecievedFromServer);
                         inventory.printInventory();
                     }
                 } catch (IOException e) {
@@ -77,33 +59,11 @@ public class MemberLibraryController {
         readObjectFromServerThread.start();
     }
 
-
-
-//    private void addToInventory(Object objectRecieved) {
-//
-//
-//        if (objectRecieved instanceof Book) {
-//            inventory.addBook((Book) objectRecieved);
-//
-//        } else if (objectRecieved instanceof Movie) {
-//            inventory.addMovie((Movie) objectRecieved);
-//
-//        } else if (objectRecieved instanceof Game) {
-//            inventory.addGame((Game) objectRecieved);
-//
-//        } else if (objectRecieved instanceof AudioBook) {
-//            inventory.addAudiobook((AudioBook) objectRecieved);
-//        }
-//
-//    }
-
-
-
     @FXML
     public void bookSelected() {
         System.out.println("book selected");
         Book book = new Book("Glass Castle", "good book", "J. Walls", 288, -1);
-//        book.numCopies = -1; // testing to borrow items
+
         try {
             objectOutputStream.writeObject(book);
             objectOutputStream.flush();
