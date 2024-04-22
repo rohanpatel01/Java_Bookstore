@@ -29,6 +29,52 @@ public class Inventory {
         audiobookList = new HashMap<>();
     }
 
+    public void addToInventory(Object objectRecieved) {
+
+
+        if (objectRecieved instanceof Book) {
+            addBook((Book) objectRecieved);
+
+        } else if (objectRecieved instanceof Movie) {
+            addMovie((Movie) objectRecieved);
+
+        } else if (objectRecieved instanceof Game) {
+            addGame((Game) objectRecieved);
+
+        } else if (objectRecieved instanceof AudioBook) {
+            addAudiobook((AudioBook) objectRecieved);
+        }
+
+    }
+
+
+    public void printInventory() {
+        for (String keys : Inventory.bookList.keySet() )
+        {
+            System.out.println(keys + ":"+ Inventory.bookList.get(keys));
+        }
+        System.out.println("============================================");
+
+        for (String keys : Inventory.movieList.keySet() )
+        {
+            System.out.println(keys + ":"+ Inventory.movieList.get(keys));
+        }
+        System.out.println("============================================");
+
+
+        for (String keys : Inventory.gameList.keySet() )
+        {
+            System.out.println(keys + ":"+ Inventory.gameList.get(keys));
+        }
+        System.out.println("============================================");
+
+        for (String keys : Inventory.audiobookList.keySet() )
+        {
+            System.out.println(keys + ":"+ Inventory.audiobookList.get(keys));
+        }
+        System.out.println("============================================");
+
+    }
 
     public void addBook(Book item) {
         if (bookList.get(item.title) == null) {

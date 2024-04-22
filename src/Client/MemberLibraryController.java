@@ -15,7 +15,8 @@ public class MemberLibraryController {
     Client client;
     ObjectOutputStream objectOutputStream;
     ObjectInputStream objectInputStream;
-    Inventory clientSideInventory;
+    Inventory inventory;
+    Object objectRecievedFromServer;
 
     @FXML
     Button uniqueBook;
@@ -29,7 +30,8 @@ public class MemberLibraryController {
     public MemberLibraryController() {
         client = new Client();
         client.setupNetworking();
-        clientSideInventory = new Inventory();
+        inventory = new Inventory();
+
         System.out.println("member socket created");
 
         try {
@@ -38,9 +40,42 @@ public class MemberLibraryController {
 
             System.out.println("member");
         } catch (IOException ioException) { ioException.printStackTrace(); }
-        System.out.println("Contoller setup networking");
+
+        Thread readObjectFromServerThread = new Thread(() -> {
+            try {
+                if ((objectRecievedFromServer = objectInputStream.readObject()) != null) {
+                   inventory.addToInventory(objectRecievedFromServer);
+                    System.out.println("member library");
+                   inventory.printInventory();
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        readObjectFromServerThread.start();
     }
 
+
+
+//    private void addToInventory(Object objectRecieved) {
+//
+//
+//        if (objectRecieved instanceof Book) {
+//            inventory.addBook((Book) objectRecieved);
+//
+//        } else if (objectRecieved instanceof Movie) {
+//            inventory.addMovie((Movie) objectRecieved);
+//
+//        } else if (objectRecieved instanceof Game) {
+//            inventory.addGame((Game) objectRecieved);
+//
+//        } else if (objectRecieved instanceof AudioBook) {
+//            inventory.addAudiobook((AudioBook) objectRecieved);
+//        }
+//
+//    }
 
 
 

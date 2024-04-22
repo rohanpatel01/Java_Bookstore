@@ -73,7 +73,6 @@ public class LoginController {
                         scene = new Scene(root);
                         stage.setScene(scene);
                         stage.show();
-                        System.out.println("show admin library");
                     } catch (IOException ioException) { ioException.printStackTrace(); }
                 }
             }
@@ -87,7 +86,6 @@ public class LoginController {
                         scene = new Scene(root);
                         stage.setScene(scene);
                         stage.show();
-                        System.out.println("show member library");
                     } catch (IOException ioException) { ioException.printStackTrace(); }
                 }
             }

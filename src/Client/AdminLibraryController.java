@@ -14,8 +14,8 @@ public class AdminLibraryController {
     Client client;
     ObjectInputStream objectInputStream;
     ObjectOutputStream objectOutputStream;
-    Inventory clientSideInventory;
-    Object objectRecieved;
+    Inventory inventory;
+    Object objectRecievedFromServer;
 
     @FXML
     Button bookButton;
@@ -30,7 +30,7 @@ public class AdminLibraryController {
     public AdminLibraryController() {
         client = new Client();
         client.setupNetworking();
-        clientSideInventory = new Inventory();
+        inventory = new Inventory();
 
         System.out.println("admin socket created");
 
@@ -58,8 +58,12 @@ public class AdminLibraryController {
             }
             // need while true?
             try {
-                if ((objectRecieved = (objectInputStream.readObject())) != null ) {
+                if ((objectRecievedFromServer = (objectInputStream.readObject())) != null ) {
                     System.out.println("admin recieved object from server");
+                    inventory.addToInventory(objectRecievedFromServer);
+                    System.out.println("member library");
+                    inventory.printInventory();
+
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
