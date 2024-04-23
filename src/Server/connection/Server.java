@@ -26,8 +26,6 @@ public class Server {
         clientList = new ArrayList<>();
         inventory = new Inventory();
 
-        Book starterBook = new Book("Glass Castle", "good book", "J. Walls", 288, 5);
-        inventory.bookList.put(starterBook.title, starterBook);
 
         try {
             ServerSocket server = new ServerSocket(1024);
@@ -59,6 +57,11 @@ public class Server {
             this.clientSocket = clientSocket;
             this.objectInputStream = objectInputStream;
             this.objectOutputStream = objectOutputStream;
+
+
+            Book starterBook = new Book("Glass_Castle", "good book", "J. Walls", 288, 5); // making _ we will parse this out later
+            inventory.bookList.put(starterBook.title, starterBook);
+            sendToAllClients(starterBook, objectOutputStream); // prepopulate inventories
         }
         public void run() {
 
