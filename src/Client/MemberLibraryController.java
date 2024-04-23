@@ -235,7 +235,34 @@ public class MemberLibraryController {
        // send same book but with 1 as numCopies so server knows to add it to inventory
 
      // get whatever item that caused the event
+        Button returnBookButton =  (Button) event.getSource();
+        HBox cartBookCard = (HBox) returnBookButton.getParent();
+        String bookItemName = cartBookCard.getId();
+        Book itemBook = (Book) cart.cartItems.get(bookItemName);
+        int count = itemBook.numCopies -= 1;
 
+        Book bookCopy = new Book(itemBook.title, itemBook.summaryDescription, itemBook.author, itemBook.numPages, 1);
+
+        // TODO: fix issue due to ^^^, wont send the last item
+        if (count <= 0) {
+            Platform.runLater(() -> {
+                cartVBox.getChildren().remove(cartBookCard);
+                System.out.println("removing card");
+
+            });
+        } else {
+            Platform.runLater(() -> {
+                String newButtonName = bookItemName + " " + count;
+                returnBookButton.setText(newButtonName);
+            });
+
+        }
+
+        try {
+            objectOutputStream.writeObject(bookCopy);
+            objectOutputStream.flush();
+
+        } catch (IOException ioe) { ioe.printStackTrace(); }
 
 //        item.numCopies = 1;
 //        try {
