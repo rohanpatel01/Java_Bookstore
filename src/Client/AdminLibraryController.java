@@ -68,6 +68,7 @@ public class AdminLibraryController {
         try {
             objectOutputStream.writeObject(book);
             objectOutputStream.flush();
+            System.out.println("sending: " + book);
 
         } catch (IOException ioe) {
             ioe.printStackTrace();

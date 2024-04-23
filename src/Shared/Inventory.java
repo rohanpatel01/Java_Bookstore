@@ -17,10 +17,10 @@ public class Inventory {
 //    }
 
 //    public static Map<ItemType, Map<Integer, ?>> inventoryList; // want this to be static but cannot access
-    public Map<String, Book > bookList;
-    public Map<String, Movie > movieList;
-    public Map<String, Game > gameList;
-    public Map<String, AudioBook > audiobookList;
+    public Map<String, LibraryItem> bookList;
+    public Map<String, LibraryItem> movieList;
+    public Map<String, LibraryItem > gameList;
+    public Map<String, LibraryItem > audiobookList;
 
     public Inventory() {
         bookList = new HashMap<>();

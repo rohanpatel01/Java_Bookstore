@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import Shared.*;
@@ -39,10 +40,54 @@ public class Server {
 
                 Thread t = new Thread(new ClientHandler(clientSocket, objectOutputStream, objectInputStream)); //, objectOutputStream
                 t.start();
+
+                // have thread to send them all the items in inventory so they are updated - make synchronized so no other program can interrupt
+                Thread updateClient = new Thread(new ClientInventoryUpdater(clientSocket, objectOutputStream, objectInputStream));
+                updateClient.start();
+
             }
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
+    }
+
+    class ClientInventoryUpdater implements Runnable {
+
+        private Socket clientSocket;
+        private ObjectInputStream objectInputStream;
+        private ObjectOutputStream objectOutputStream;
+        private Object objectRecieved;
+
+        ClientInventoryUpdater(Socket clientSocket, ObjectOutputStream objectOutputStream, ObjectInputStream objectInputStream) {
+            this.clientSocket = clientSocket;
+            this.objectInputStream = objectInputStream;
+            this.objectOutputStream = objectOutputStream;
+        }
+
+        @Override
+       public void run() {
+            // send to just the client - should be asynchronous since was run in a thread
+
+            List<Map<String, LibraryItem>> inventoryLists = new ArrayList<>();
+            inventoryLists.add(inventory.bookList);
+            inventoryLists.add(inventory.movieList);
+            inventoryLists.add(inventory.gameList);
+            inventoryLists.add(inventory.audiobookList);
+
+//            Book starterBook = new Book("Glass_Castle", "good book", "J. Walls", 288, 5); // making _ we will parse this out later
+//            Book otherBook = new Book("Atomic Habits Book", "be better", "Author Atomic Habits", 19, 5); // making _ we will parse this out later
+//            inventory.bookList.put(starterBook.title, starterBook);
+//            inventory.bookList.put(otherBook .title, otherBook );
+
+            for (int i = 0; i < inventoryLists.size(); i++) {
+                for (String s : inventoryLists.get(i).keySet()){
+                    try {
+                        objectOutputStream.writeObject(inventoryLists.get(i).get(s));
+                        objectOutputStream.flush();
+                    } catch (IOException e) { throw new RuntimeException(e); }
+                }
+            }
+       }
     }
 
     class ClientHandler implements Runnable {
@@ -57,26 +102,6 @@ public class Server {
             this.clientSocket = clientSocket;
             this.objectInputStream = objectInputStream;
             this.objectOutputStream = objectOutputStream;
-
-
-            Book starterBook = new Book("Glass_Castle", "good book", "J. Walls", 288, 5); // making _ we will parse this out later
-            Book otherBook = new Book("Atomic Habits Book", "be better", "Author Atomic Habits", 19, 5); // making _ we will parse this out later
-            inventory.bookList.put(starterBook.title, starterBook);
-            inventory.bookList.put(otherBook .title, otherBook );
-            Thread sendFirstBook = new Thread(() -> {
-                sendToAllClients(starterBook, objectOutputStream); // prepopulate inventories
-            });
-            Thread sendSecondBook = new Thread(() -> {
-                sendToAllClients(otherBook , objectOutputStream); // prepopulate inventories
-            });
-           sendFirstBook.start();
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            sendSecondBook.start();
-
         }
         public void run() {
 
@@ -84,7 +109,7 @@ public class Server {
                 try {
                     while (true) { // should have a while true to recieve objects?
                         if ((objectRecieved = objectInputStream.readObject()) != null) {
-
+                            System.out.println("server recieved object: " + objectRecieved);
                             handleObject(objectRecieved, objectOutputStream);
                             inventory.printInventory();
 
@@ -140,6 +165,7 @@ public class Server {
 
 
     private void sendToAllClients(Object object, ObjectOutputStream objectOutputStream) {
+        System.out.println("sending this item to all client: " + object);
         Thread sendObjectToAllClientsAsync = new Thread(() -> {
             for (Socket client : clientList) {
                 System.out.println(client.toString());
@@ -149,6 +175,7 @@ public class Server {
                     objectOutputStream.reset(); // need to reset or objects are not updated properly
                     objectOutputStream.writeObject(object);
                     objectOutputStream.flush();
+                    objectOutputStream.reset(); // resetting since client is not recieving or something
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }

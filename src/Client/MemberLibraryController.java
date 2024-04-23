@@ -111,12 +111,12 @@ public class MemberLibraryController {
 
                             if (!isCardPresent) {
                                 System.out.println("create card");
+                                HBox createdBookCard = new HBox();
+                                createdBookCard.setId(((Book) objectRecievedFromServer).title);
+                                Button checkoutButton = new Button( ((Book) objectRecievedFromServer).title + ((Book) objectRecievedFromServer).numCopies );
+                                System.out.println("create card object: " + objectRecievedFromServer);
+                                checkoutButton.setOnAction(event -> bookSelected(event));  // , (Book) objectRecievedFromServer)
                                 Platform.runLater(() -> {
-                                    HBox createdBookCard = new HBox();
-                                    createdBookCard.setId(((Book) objectRecievedFromServer).title);
-                                    Button checkoutButton = new Button( ((Book) objectRecievedFromServer).title + ((Book) objectRecievedFromServer).numCopies );
-                                    System.out.println("create card object: " + objectRecievedFromServer);
-                                    checkoutButton.setOnAction(event -> bookSelected(event));  // , (Book) objectRecievedFromServer)
                                     createdBookCard.getChildren().add(checkoutButton);
                                     booksHBox.getChildren().add(createdBookCard);
                                 });
@@ -137,7 +137,8 @@ public class MemberLibraryController {
     public void bookSelected(ActionEvent event) {  // , Book inventoryBookSelected
 
         Button triggeredButton = (Button) event.getSource();
-        Book inventoryBook = inventory.bookList.get(triggeredButton.getParent().getId());
+        // changed to cast into book
+        Book inventoryBook = (Book) inventory.bookList.get(triggeredButton.getParent().getId());
         Book checkoutBook = new Book(inventoryBook.title, inventoryBook.summaryDescription, inventoryBook.author, inventoryBook.numPages, 1);
 
         try {
