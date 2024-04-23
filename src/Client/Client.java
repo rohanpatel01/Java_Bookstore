@@ -18,7 +18,7 @@ public class Client {
 
      public void setupNetworking() {
         try {
-            clientSocket = new Socket("10.154.89.252", 1024);
+            clientSocket = new Socket("11.21.69.196", 1024);
             System.out.println("Client Socket Created: " + clientSocket);
 
         } catch (IOException ioe) {
