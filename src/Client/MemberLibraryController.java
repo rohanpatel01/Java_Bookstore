@@ -31,10 +31,7 @@ public class MemberLibraryController {
     ObjectInputStream objectInputStream;
     Inventory inventory;
     Object objectRecievedFromServer;
-    ArrayList<Object> cart;
-//    FXMLLoader loader;
-//    Parent root;
-
+    Cart cart;
 
     @FXML
     Button uniqueBook;
@@ -58,45 +55,19 @@ public class MemberLibraryController {
         client = new Client();
         client.setupNetworking();
         inventory = new Inventory();
-        cart = new ArrayList<>();
+        cart = new Cart();
 
         try {
             objectOutputStream = new ObjectOutputStream(client.clientSocket.getOutputStream());
             objectInputStream = new ObjectInputStream(client.clientSocket.getInputStream());
 
-            System.out.println("member");
+//            System.out.println("member");
         } catch (IOException ioException) { ioException.printStackTrace(); }
 
 
         Thread t = new Thread(new ObjectReader()); //, objectOutputStream
         t.start();
     }
-
-
-//    public MemberLibraryController() {
-//
-//        client = new Client();
-//        client.setupNetworking();
-//        inventory = new Inventory();
-//        cart = new ArrayList<>();
-//
-//        try {
-//            objectOutputStream = new ObjectOutputStream(client.clientSocket.getOutputStream());
-//            objectInputStream = new ObjectInputStream(client.clientSocket.getInputStream());
-//
-//            System.out.println("member");
-//        } catch (IOException ioException) { ioException.printStackTrace(); }
-//
-//
-//        Thread t = new Thread(new ObjectReader()); //, objectOutputStream
-//        t.start();
-//
-////        Thread readObjectFromServerThread = new Thread(() -> {
-////            new ObjectReader();
-////        });
-////        readObjectFromServerThread.start();
-//    }
-
 
 
     class ObjectReader implements Runnable{
@@ -107,13 +78,14 @@ public class MemberLibraryController {
                try {
                    if ((objectRecievedFromServer = objectInputStream.readObject()) != null) {
                        inventory.bookList.put(((Book) objectRecievedFromServer).title, (Book) objectRecievedFromServer);
-
+                       System.out.println("recieved object: ");
+                       inventory.printInventory();
                        if ( inventory.bookList.get(((Book) objectRecievedFromServer).title).numCopies <= 0) { //((Book) objectRecievedFromServer).numCopies
                             for (Node node : booksHBox.getChildren()) {
                                 if (node.getId() != null && node.getId().equals(((Book) objectRecievedFromServer).title)) {
-                                    System.out.println("delete node");
+//                                    System.out.println("delete node");
                                     Platform.runLater(() -> {
-                                        System.out.println("remove: " + node);
+//                                        System.out.println("remove: " + node);
                                         booksHBox.getChildren().remove(node);
                                     });
                                 }
@@ -128,67 +100,73 @@ public class MemberLibraryController {
                                 // if item exists update the number on card to whatever the number of copies was given from server
                                 if (node.getId() != null && node.getId().equals(((Book) objectRecievedFromServer).title)) {
                                    isCardPresent = true;
-                                    System.out.println("updating number on card");
-                                        Platform.runLater(() -> {
-                                            String newButtonName = (((Book) objectRecievedFromServer).title) +(((Book) objectRecievedFromServer).numCopies)  + "";
-                                            ((Button) node).setText(newButtonName);
-                                        });
+//                                    System.out.println("updating number on card");
+                                    Platform.runLater(() -> {
+                                        String newButtonName = (((Book) objectRecievedFromServer).title) +(((Book) objectRecievedFromServer).numCopies)  + "";
+                                        ((Button) node.lookup(".button")).setText(newButtonName);
+                                    });
                                 }
                             }
 
-                            // item is not created - create a card for it
                             if (!isCardPresent) {
-                                // create temporary hbox for this
+                                System.out.println("create card");
                                 Platform.runLater(() -> {
                                     HBox createdBookCard = new HBox();
+                                    createdBookCard.setId(((Book) objectRecievedFromServer).title);
                                     Button checkoutButton = new Button( ((Book) objectRecievedFromServer).title + ((Book) objectRecievedFromServer).numCopies );
-//                                createdBookCard.setId(((Book) objectRecievedFromServer).title);
-                                    checkoutButton.setId(((Book) objectRecievedFromServer).title) ;
-                                    checkoutButton.setOnAction(event -> bookSelected(event, (Book) objectRecievedFromServer));
+                                    System.out.println("create card object: " + objectRecievedFromServer);
+                                    checkoutButton.setOnAction(event -> bookSelected(event));  // , (Book) objectRecievedFromServer)
+                                    createdBookCard.getChildren().add(checkoutButton);
                                     booksHBox.getChildren().add(createdBookCard);
-                                    booksHBox.getChildren().add(checkoutButton); // TODO: Something wrong here with adding bc cannot remove correctly
-                                    // TODO: should be " createdBookCard.getChildren().add(checkoutButton);"
-                                    // but then issue is looping through that
                                 });
                             }
 
                         }
                    }
-                       inventory.printInventory();
+//                       inventory.printInventory();
 
                }  catch (IOException| ClassNotFoundException  exception) {exception.printStackTrace(); }
            }
        }
    }
 
+
+    // TODO: make something general that just sends over to server and adds to card without worrying about it
     @FXML
-    public void bookSelected(ActionEvent event, Book inventoryBookSelected) {
-        System.out.println("book selected");
+    public void bookSelected(ActionEvent event) {  // , Book inventoryBookSelected
+//        System.out.println("book selected");
 //        Book book = new Book("Glass_Castle", "good book", "J. Walls", 288, -1);
+        // get the button that created the item
+        // gets its id
+        // find the book in inventory
+        // create a book and change num, copies,
+        // add it to card and send it over
 
-        Book checkoutBook = new Book(inventoryBookSelected.title, inventoryBookSelected.summaryDescription, inventoryBookSelected.author, inventoryBookSelected.numPages, -1);
-        cart.add(checkoutBook);
-        System.out.println("created and added book to cart");
+        // cart should have numCopies as 1
+        // object sent should have numCopies as -1
 
-//        if (inventory.bookList.get(checkoutBook.title).numCopies > 0) {
-            // actually create the card or whatever in the cart based on copies in inventory
-            // if inventory has no copies and we hit a book then create a card with count of 1
+        Button triggeredButton = (Button) event.getSource();
+        Book inventoryBook = inventory.bookList.get(triggeredButton.getParent().getId());
+        Book checkoutBook = new Book(inventoryBook.title, inventoryBook.summaryDescription, inventoryBook.author, inventoryBook.numPages, 1);
 
-            // create book card in cart
-//            HBox bookHbox = new HBox();
-//            Button button = new Button("some boook");
-//            cartVBox.getChildren().add(button);
+        try {
+            checkoutBook.numCopies = -1; // so server can process as removing from inventory
+            objectOutputStream.writeObject(checkoutBook);
+            objectOutputStream.flush();
+
+        } catch (IOException ioe) { ioe.printStackTrace(); }
+
+        if (cart.cartItems.get(checkoutBook.title) != null) {
+            cart.cartItems.get(checkoutBook.title).numCopies += 1;
+            System.out.println("update cart item");
+        } else {
+            cart.addItemToCart(checkoutBook);
+            System.out.println("create cart item");
+        }
 
 
-            try {
-                objectOutputStream.writeObject(checkoutBook);
-                objectOutputStream.flush();
-                System.out.println("sent checkout book: " + checkoutBook);
-
-            } catch (IOException ioe) {
-                ioe.printStackTrace();
-            }
-//        }
+//        cart.add(checkoutBook); // TODO: setting to -1 might change things idk
+        cart.addItemToCart(checkoutBook);
     }
     @FXML
     public void gameSelected() {

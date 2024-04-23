@@ -111,7 +111,7 @@ public class Server {
             } else { // item is in inventory, see how to update depending on if adding or removing
 
                 if (((Book) objectReceived).numCopies > 0) { // adding item to inventory
-
+                    // TODO: May need to synchronize this so multiple clients cannot get same item
                     inventory.updateBook((Book) objectReceived);
                     sendToAllClients( inventory.bookList.get(((Book) objectReceived).title) , objectOutputStream);
 
@@ -121,7 +121,7 @@ public class Server {
 
                     // NOTE: summing them because now objectRecieved.numCopies is negative so (positive + (-number))
                     if (  (currentBooksInInventory - Math.abs(((Book) objectReceived).numCopies)) >= 0  ) { // ((Book) objectReceived).numCopies) >= 0
-
+                        // TODO: May need to synchronize this so multiple clients cannot get same item
                         inventory.updateBook((Book) objectReceived);
                         sendToAllClients( inventory.bookList.get(((Book) objectReceived).title) , objectOutputStream);
 
