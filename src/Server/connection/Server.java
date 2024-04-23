@@ -60,8 +60,23 @@ public class Server {
 
 
             Book starterBook = new Book("Glass_Castle", "good book", "J. Walls", 288, 5); // making _ we will parse this out later
+            Book otherBook = new Book("Atomic Habits Book", "be better", "Author Atomic Habits", 19, 5); // making _ we will parse this out later
             inventory.bookList.put(starterBook.title, starterBook);
-            sendToAllClients(starterBook, objectOutputStream); // prepopulate inventories
+            inventory.bookList.put(otherBook .title, otherBook );
+            Thread sendFirstBook = new Thread(() -> {
+                sendToAllClients(starterBook, objectOutputStream); // prepopulate inventories
+            });
+            Thread sendSecondBook = new Thread(() -> {
+                sendToAllClients(otherBook , objectOutputStream); // prepopulate inventories
+            });
+           sendFirstBook.start();
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            sendSecondBook.start();
+
         }
         public void run() {
 
