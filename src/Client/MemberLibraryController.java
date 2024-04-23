@@ -3,6 +3,7 @@ package Client;
 import Server.connection.Server;
 import Shared.*;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -14,6 +15,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+import javax.swing.*;
+//import java.awt.event.ActionEvent;
 import java.io.IOException;
 //import java.io.ObjectInputStream;
 import java.io.ObjectInputStream;
@@ -94,8 +97,71 @@ public class MemberLibraryController {
 ////        readObjectFromServerThread.start();
 //    }
 
+
+
+    class ObjectReader implements Runnable{
+
+       @Override
+       public void run() {
+           while (true) {
+               try {
+                   if ((objectRecievedFromServer = objectInputStream.readObject()) != null) {
+                       inventory.bookList.put(((Book) objectRecievedFromServer).title, (Book) objectRecievedFromServer);
+
+                       if ( inventory.bookList.get(((Book) objectRecievedFromServer).title).numCopies <= 0) { //((Book) objectRecievedFromServer).numCopies
+                            for (Node node : booksHBox.getChildren()) {
+                                if (node.getId() != null && node.getId().equals(((Book) objectRecievedFromServer).title)) {
+                                    System.out.println("delete node");
+                                    Platform.runLater(() -> {
+                                        booksHBox.getChildren().remove(node);
+                                    });
+                                }
+                            }
+                       } else {
+//
+                           // to check if need to create we look through and see if card exists with fxid of the book name
+                           boolean isCardPresent = false;
+//                           System.out.println(booksHBox);
+
+                            for (Node node : booksHBox.getChildren()) {
+                                // if item exists update the number on card to whatever the number of copies was given from server
+                                if (node.getId() != null && node.getId().equals(((Book) objectRecievedFromServer).title)) {
+                                   isCardPresent = true;
+                                    System.out.println("updating number on card");
+                                        Platform.runLater(() -> {
+                                            System.out.println("Node: " + node);
+                                            System.out.println("set text to: " + (((Book) objectRecievedFromServer).title + ((Book) objectRecievedFromServer).numCopies));
+                                            String newButtonName = (((Book) objectRecievedFromServer).title) +(((Book) objectRecievedFromServer).numCopies)  + "";
+                                            ((Button) node).setText(newButtonName);
+                                        });
+                                }
+                            }
+
+                            // item is not created - create a card for it
+                            if (!isCardPresent) {
+                                System.out.println("creating card");
+                                System.out.println("books hbox" + booksHBox);
+                                // create temporary hbox for this
+                                HBox createdBookCard = new HBox();
+                                Button checkoutButton = new Button( ((Book) objectRecievedFromServer).title + ((Book) objectRecievedFromServer).numCopies );
+//                                createdBookCard.setId(((Book) objectRecievedFromServer).title);
+                                checkoutButton.setId(((Book) objectRecievedFromServer).title) ;
+                                checkoutButton.setOnAction(event -> bookSelected(event));
+                                booksHBox.getChildren().add(createdBookCard);
+                                booksHBox.getChildren().add(checkoutButton);
+                            }
+
+                        }
+                   }
+                       inventory.printInventory();
+
+               }  catch (IOException| ClassNotFoundException  exception) {exception.printStackTrace(); }
+           }
+       }
+   }
+
     @FXML
-    public void bookSelected() {
+    public void bookSelected(ActionEvent event) {
         System.out.println("book selected");
         Book book = new Book("Glass_Castle", "good book", "J. Walls", 288, -1);
         cart.add(book);
@@ -119,71 +185,6 @@ public class MemberLibraryController {
             }
         }
     }
-
-
-    class ObjectReader implements Runnable{
-
-       @Override
-       public void run() {
-           while (true) {
-               try {
-                   if ((objectRecievedFromServer = objectInputStream.readObject()) != null) {
-                       System.out.println("got object from server");
-                       inventory.bookList.put(((Book) objectRecievedFromServer).title, (Book) objectRecievedFromServer);
-
-//                       Button button = new Button();
-
-
-                       System.out.println("This one: " + booksHBox);
-                       if ( inventory.bookList.get(((Book) objectRecievedFromServer).title).numCopies <= 0) { //((Book) objectRecievedFromServer).numCopies
-                           System.out.println("delete node");
-//                                for (Node node : booksHBox.getChildren()) {
-//                                    if (node.getId() != null && node.getId().equals(((Book) objectRecievedFromServer).title)) {
-//                                        System.out.println("delete node");
-//                                        booksHBox.getChildren().remove(node);
-//                                    }
-//                                }
-                       } else {
-//
-                           // to check if need to create we look through and see if card exists with fxid of the book name
-                           boolean isCardPresent = false;
-//                           System.out.println(booksHBox);
-
-                            for (Node node : booksHBox.getChildren()) {
-                                // if item exists update the number on card to whatever the number of copies was given from server
-                                if (node.getId() != null && node.getId().equals(((Book) objectRecievedFromServer).title)) {
-                                   isCardPresent = true;
-                                    System.out.println("updating number on card");
-                                    // get that node's button and change the text
-//                                        System.out.println("updating to: " + inventory.bookList.get(((Book) objectRecievedFromServer).title).toString());
-//                                        Platform.runLater(() -> {
-//                                            ((Button) ((HBox) node).lookup(((Book) objectRecievedFromServer).title)).setText(inventory.bookList.get(((Book) objectRecievedFromServer).numCopies).toString());
-//                                        });
-                                }
-                            }
-
-                            // item is not created - create a card for it
-                            if (!isCardPresent) {
-                                System.out.println("creating card");
-                                System.out.println("books hbox" + booksHBox);
-                                // create temporary hbox for this
-                                HBox createdBookCard = new HBox();
-                                Button checkoutButton = new Button( ((Book) objectRecievedFromServer).title + ((Book) objectRecievedFromServer).numCopies );
-                                createdBookCard.setId(((Book) objectRecievedFromServer).title);
-//                                checkoutButton.setId(((Book) objectRecievedFromServer).title) ;
-                                booksHBox.getChildren().add(createdBookCard);
-                                booksHBox.getChildren().add(checkoutButton);
-                            }
-
-                        }
-                   }
-                       inventory.printInventory();
-
-               }  catch (IOException| ClassNotFoundException  exception) {exception.printStackTrace(); } //
-           }
-       }
-   }
-
     @FXML
     public void gameSelected() {
         System.out.println("Game selected");
