@@ -1,5 +1,6 @@
 package Client;
 
+import Server.connection.Server;
 import Shared.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -46,8 +47,9 @@ public class MemberLibraryController {
 //    HBox booksHBox;
 //    @FXML
 //    HBox booksListHBox;
+    @FXML
+    HBox booksHBox;
 
-    HBox something;
 
     public MemberLibraryController() {
 
@@ -56,13 +58,6 @@ public class MemberLibraryController {
         inventory = new Inventory();
         cart = new ArrayList<>();
 
-//        try {
-//            loader = new FXMLLoader(getClass().getResource("your_fxml_file.fxml"));
-//            root = loader.load();
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-
         try {
             objectOutputStream = new ObjectOutputStream(client.clientSocket.getOutputStream());
             objectInputStream = new ObjectInputStream(client.clientSocket.getInputStream());
@@ -70,77 +65,14 @@ public class MemberLibraryController {
             System.out.println("member");
         } catch (IOException ioException) { ioException.printStackTrace(); }
 
-        Thread readObjectFromServerThread = new Thread(() -> {
 
-            // to see what type of item it is and dont have to repeat just have an array that holds the various item lists in indecies
-            // then based on what type of item it is we will use that corresponding list
-            // same with the hbox that holds each of the items
+        Thread t = new Thread(new MemberLibraryController.ObjectReader()); //, objectOutputStream
+        t.start();
 
-            while (true) {
-                try {
-                    if ((objectRecievedFromServer = objectInputStream.readObject()) != null) {
-
-                        // TODO:  find better way to do this for all books, see if can have general thing in inventory,
-                        // TODO:  hard tho since server requires to sendAllClients where client does not need to do that
-                        if (objectRecievedFromServer instanceof Book) {
-
-                            inventory.bookList.put(((Book) objectRecievedFromServer).title, (Book) objectRecievedFromServer);
-
-//                            System.out.println(something.getChildren());
-//                            if ( inventory.bookList.get(((Book) objectRecievedFromServer).title).numCopies <= 0) { //((Book) objectRecievedFromServer).numCopies
-//                                for (Node node : something.getChildren()) {
-//                                    if (node.getId() != null && node.getId().equals(((Book) objectRecievedFromServer).title)) {
-//                                        System.out.println("delete node");
-//                                        something.getChildren().remove(node);
-//                                    }
-//                                }
-//                            } else {
-//
-                                // to check if need to create we look through and see if card exists with fxid of the book name
-                                boolean isCardPresent = false;
-
-//                                System.out.println("something get children: " + something.getChildren());
-//                                for (Node node : something.getChildren()){
-//                                    System.out.println("hi");
-//                                }
-
-
-//                                for (Node node : something.getChildren()) {
-//                                    // if item exists update the number on card to whatever the number of copies was given from server
-//                                    if (node.getId() != null && node.getId().equals(((Book) objectRecievedFromServer).title)) {
-//                                       isCardPresent = true;
-//                                        System.out.println("updating number on card");
-//                                        // get that node's button and change the text
-////                                        System.out.println("updating to: " + inventory.bookList.get(((Book) objectRecievedFromServer).title).toString());
-////                                        Platform.runLater(() -> {
-////                                            ((Button) ((HBox) node).lookup(((Book) objectRecievedFromServer).title)).setText(inventory.bookList.get(((Book) objectRecievedFromServer).numCopies).toString());
-////                                        });
-//                                    }
-//                                }
-//
-//                                // item is not created - create a card for it
-//                                if (!isCardPresent) {
-//                                    System.out.println("creating card");
-//                                    // create temporary hbox for this
-//                                    HBox createdBookCard = new HBox();
-//                                    Button checkoutButton = new Button( ((Book) objectRecievedFromServer).title + ((Book) objectRecievedFromServer).numCopies );
-//                                    createdBookCard.setId(((Book) objectRecievedFromServer).title);
-//                                    something.getChildren().add(createdBookCard);
-//                                    something.getChildren().add(checkoutButton);
-//                                }
-//
-//                            }
-                        }
-                        inventory.printInventory();
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
-        readObjectFromServerThread.start();
+//        Thread readObjectFromServerThread = new Thread(() -> {
+//            new ObjectReader();
+//        });
+//        readObjectFromServerThread.start();
     }
 
     @FXML
@@ -169,6 +101,22 @@ public class MemberLibraryController {
         }
     }
 
+
+    class ObjectReader implements Runnable{
+
+       @Override
+       public void run() {
+           while (true) {
+               try {
+                   if ((objectRecievedFromServer = objectInputStream.readObject()) != null) {
+                       System.out.println("got object from server");
+                       System.out.println(cartVBox);
+                   }
+               } catch (IOException | ClassNotFoundException ioe) {ioe.printStackTrace(); }
+           }
+       }
+
+    }
 
     @FXML
     public void gameSelected() {
