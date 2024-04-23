@@ -15,5 +15,14 @@ public class Cart {
        cartItems.put(libraryItem.title, libraryItem);
     }
 
+    public void printCart(){
+        System.out.println("======");
+        System.out.println("Cart Items: ");
+        for (String s : cartItems.keySet()) {
+            System.out.println(cartItems.get(s));
+        }
+        System.out.println("======");
+    }
+
 
 }

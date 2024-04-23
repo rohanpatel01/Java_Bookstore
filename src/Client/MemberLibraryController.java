@@ -80,6 +80,7 @@ public class MemberLibraryController {
                        inventory.bookList.put(((Book) objectRecievedFromServer).title, (Book) objectRecievedFromServer);
                        System.out.println("recieved object: ");
                        inventory.printInventory();
+                       cart.printCart();
                        if ( inventory.bookList.get(((Book) objectRecievedFromServer).title).numCopies <= 0) { //((Book) objectRecievedFromServer).numCopies
                             for (Node node : booksHBox.getChildren()) {
                                 if (node.getId() != null && node.getId().equals(((Book) objectRecievedFromServer).title)) {
@@ -246,6 +247,7 @@ public class MemberLibraryController {
         // TODO: fix issue due to ^^^, wont send the last item
         if (count <= 0) {
             Platform.runLater(() -> {
+                cart.cartItems.remove(bookItemName); // need to remove from cart as well
                 cartVBox.getChildren().remove(cartBookCard);
                 System.out.println("removing card");
 
