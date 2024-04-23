@@ -11,7 +11,7 @@ public class Cart {
         this.cartItems = new HashMap<>();
     }
 
-    public void addItemToCart(LibraryItem libraryItem) {
+    public void add(LibraryItem libraryItem) {
        cartItems.put(libraryItem.title, libraryItem);
     }
 

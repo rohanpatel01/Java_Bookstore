@@ -134,16 +134,6 @@ public class MemberLibraryController {
     // TODO: make something general that just sends over to server and adds to card without worrying about it
     @FXML
     public void bookSelected(ActionEvent event) {  // , Book inventoryBookSelected
-//        System.out.println("book selected");
-//        Book book = new Book("Glass_Castle", "good book", "J. Walls", 288, -1);
-        // get the button that created the item
-        // gets its id
-        // find the book in inventory
-        // create a book and change num, copies,
-        // add it to card and send it over
-
-        // cart should have numCopies as 1
-        // object sent should have numCopies as -1
 
         Button triggeredButton = (Button) event.getSource();
         Book inventoryBook = inventory.bookList.get(triggeredButton.getParent().getId());
@@ -156,17 +146,10 @@ public class MemberLibraryController {
 
         } catch (IOException ioe) { ioe.printStackTrace(); }
 
-        if (cart.cartItems.get(checkoutBook.title) != null) {
-            cart.cartItems.get(checkoutBook.title).numCopies += 1;
-            System.out.println("update cart item");
-        } else {
-            cart.addItemToCart(checkoutBook);
-            System.out.println("create cart item");
-        }
+        //TODO: Add item to cart
+        checkoutBook.numCopies = 1;
+        addItemToCart(checkoutBook);
 
-
-//        cart.add(checkoutBook); // TODO: setting to -1 might change things idk
-        cart.addItemToCart(checkoutBook);
     }
     @FXML
     public void gameSelected() {
@@ -219,22 +202,49 @@ public class MemberLibraryController {
 
     }
 
+    private void addItemToCart(LibraryItem item) {
+
+        if (cart.cartItems.get(item.title) != null) {
+            cart.cartItems.get(item.title).numCopies += item.numCopies;
+
+           for (Node node : cartVBox.getChildren()) {
+            if (node.getId() != null && node.getId().equals(item.title)) {
+                Platform.runLater(() -> {
+                    String newButtonName = (item.title + " " + cart.cartItems.get(item.title).numCopies);
+                    ((Button) node.lookup(".button")).setText(newButtonName);
+                });
+            }
+        }
 
 
-
-
+            System.out.println("update cart item");
+        } else {
+            cart.add(item);
+            System.out.println("create cart item");
+            HBox cartCardHBox = new HBox();
+            cartCardHBox.setId(item.title);
+            Button returnButton = new Button( item.title + " " + item.numCopies );
+            returnButton.setOnAction(event -> returnBook(event));  // , (Book) objectRecievedFromServer)
+            cartCardHBox .getChildren().add(returnButton);
+            cartVBox.getChildren().add(cartCardHBox);
+        }
+    }
 
     @FXML
-    public void returnBook(Book item){
+    public void returnBook(ActionEvent event){
        // send same book but with 1 as numCopies so server knows to add it to inventory
-        item.numCopies = 1;
-        try {
-            objectOutputStream.writeObject(item);
-            objectOutputStream.flush();
 
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
+     // get whatever item that caused the event
+
+
+//        item.numCopies = 1;
+//        try {
+//            objectOutputStream.writeObject(item);
+//            objectOutputStream.flush();
+//
+//        } catch (IOException ioe) {
+//            ioe.printStackTrace();
+//        }
         // need to delete button (should be entire book/item card once made)
 
     }
