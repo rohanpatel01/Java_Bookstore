@@ -2,14 +2,25 @@ package Client;
 
 import Shared.Book;
 import Shared.Inventory;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
 
 public class AdminLibraryController {
+
+    private Stage stage;
+    private Scene scene;
+    private Parent root;
+
 
     Client client;
     ObjectInputStream objectInputStream;
@@ -26,6 +37,8 @@ public class AdminLibraryController {
     @FXML
     Button audiobookButton;
 
+    @FXML
+    Button exitButton;
 
     public AdminLibraryController() {
         client = new Client();
@@ -60,6 +73,18 @@ public class AdminLibraryController {
 
         });
         objectListenerThread.start();
+    }
+
+    @FXML
+    public void exit(ActionEvent event) {
+        System.out.println("exit");
+        try {
+            root = FXMLLoader.load(getClass().getResource("ExitPage.fxml"));
+            stage = (Stage)((Node) event.getSource()).getScene().getWindow();
+            scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException ioException) { ioException.printStackTrace(); }
     }
 
     public void AddBook() {

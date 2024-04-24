@@ -54,7 +54,7 @@
             </ScrollPane>
          </children>
       </VBox>
-      <ScrollPane layoutX="488.0" layoutY="8.0" prefHeight="397.0" prefWidth="252.0">
+      <ScrollPane layoutX="489.0" layoutY="87.0" prefHeight="397.0" prefWidth="252.0">
          <content>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="397.0" prefWidth="253.0">
                <children>
@@ -63,7 +63,7 @@
             </AnchorPane>
          </content>
       </ScrollPane>
-      <HBox layoutX="519.0" layoutY="419.0" prefHeight="90.0" prefWidth="177.0">
+      <HBox layoutX="391.0" layoutY="520.0" prefHeight="90.0" prefWidth="177.0">
          <children>
             <ImageView fitHeight="109.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                <image>
@@ -84,5 +84,6 @@
             </VBox>
          </children>
       </HBox>
+      <Button fx:id="exitButton" layoutX="673.0" layoutY="15.0" mnemonicParsing="false" onAction="#exit" prefHeight="24.0" prefWidth="62.0" text="exit" />
    </children>
 </Pane>

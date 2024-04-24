@@ -43,6 +43,8 @@ public class LoginController {
     TextField loginPassword;
     @FXML
     Button changeUserButton;
+    @FXML
+    Button exitButton;
 
 
 //    Client client;
@@ -120,6 +122,16 @@ public class LoginController {
 
     }
 
+    @FXML
+    public void exit(ActionEvent event) {
+        try {
+            root = FXMLLoader.load(getClass().getResource("ExitPage.fxml"));
+            stage = (Stage)((Node) event.getSource()).getScene().getWindow();
+            scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException ioException) { ioException.printStackTrace(); }
+    }
 
 
 }

@@ -8,12 +8,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 import javax.swing.*;
 //import java.awt.event.ActionEvent;
@@ -33,6 +35,10 @@ public class MemberLibraryController {
     LibraryItem objectRecievedFromServer;
     Cart cart;
 
+    private Stage stage;
+    private Scene scene;
+    private Parent root;
+
     @FXML
     Button uniqueBook;
     @FXML
@@ -51,6 +57,8 @@ public class MemberLibraryController {
     HBox gamesHBox;
     @FXML
     HBox audiobooksHBox;
+    @FXML
+    Button exitButton;
 
     public void initialize() {
 //        System.out.println("initialize: booksHBox: " + booksHBox);
@@ -222,6 +230,18 @@ public class MemberLibraryController {
 
         } catch (IOException ioe) { ioe.printStackTrace(); }
 
+    }
+
+    @FXML
+    public void exit(ActionEvent event) {
+        System.out.println("exit");
+        try {
+            root = FXMLLoader.load(getClass().getResource("ExitPage.fxml"));
+            stage = (Stage)((Node) event.getSource()).getScene().getWindow();
+            scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException ioException) { ioException.printStackTrace(); }
     }
 
     private void addItemToCart(LibraryItem item) {
