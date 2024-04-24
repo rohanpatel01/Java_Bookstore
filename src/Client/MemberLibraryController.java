@@ -43,12 +43,14 @@ public class MemberLibraryController {
     Button uniqueGame;
     @FXML
     VBox cartVBox;
-//    @FXML
-//    HBox booksHBox;
-//    @FXML
-//    HBox booksListHBox;
     @FXML
     HBox booksHBox;
+    @FXML
+    HBox moviesHBox;
+    @FXML
+    HBox gamesHBox;
+    @FXML
+    HBox audiobooksHBox;
 
     public void initialize() {
 //        System.out.println("initialize: booksHBox: " + booksHBox);
@@ -83,32 +85,26 @@ public class MemberLibraryController {
                    if ((objectRecievedFromServer = (LibraryItem) objectInputStream.readObject()) != null) {
 
                        int itemIndex = determineItemType(objectRecievedFromServer);
+                       HBox itemHbox = determineItemHbox(objectRecievedFromServer);
 
                        inventory.inventoryLists.get(itemIndex).put(( objectRecievedFromServer).title, objectRecievedFromServer);
-                       System.out.println("recieved object: ");
                        inventory.printInventory();
                        cart.printCart();
                        if ( inventory.inventoryLists.get(itemIndex).get(( objectRecievedFromServer).title).numCopies <= 0) { //((Book) objectRecievedFromServer).numCopies
-                            for (Node node : booksHBox.getChildren()) {
+                            for (Node node : itemHbox.getChildren()) {
                                 if (node.getId() != null && node.getId().equals(( objectRecievedFromServer).title)) {
-//                                    System.out.println("delete node");
                                     Platform.runLater(() -> {
-//                                        System.out.println("remove: " + node);
-                                        booksHBox.getChildren().remove(node);
+                                        itemHbox.getChildren().remove(node);
                                     });
                                 }
                             }
                        } else {
 //
-                           // to check if need to create we look through and see if card exists with fxid of the book name
                            boolean isCardPresent = false;
-//                           System.out.println(booksHBox);
 
-                            for (Node node : booksHBox.getChildren()) {
-                                // if item exists update the number on card to whatever the number of copies was given from server
+                            for (Node node : itemHbox.getChildren()) {
                                 if (node.getId() != null && node.getId().equals( objectRecievedFromServer.title)) {
                                    isCardPresent = true;
-//                                    System.out.println("updating number on card");
                                     Platform.runLater(() -> {
                                         String newButtonName = (( objectRecievedFromServer).title) +(( objectRecievedFromServer).numCopies)  + "";
                                         ((Button) node.lookup(".button")).setText(newButtonName);
@@ -117,15 +113,13 @@ public class MemberLibraryController {
                             }
 
                             if (!isCardPresent) {
-                                System.out.println("create card");
                                 HBox createdBookCard = new HBox();
                                 createdBookCard.setId(( objectRecievedFromServer).title);
                                 Button checkoutButton = new Button( ( objectRecievedFromServer).title + ( objectRecievedFromServer).numCopies );
-                                System.out.println("create card object: " + objectRecievedFromServer);
                                 checkoutButton.setOnAction(event -> bookSelected(event));  // , (Book) objectRecievedFromServer)
                                 Platform.runLater(() -> {
                                     createdBookCard.getChildren().add(checkoutButton);
-                                    booksHBox.getChildren().add(createdBookCard);
+                                    itemHbox.getChildren().add(createdBookCard);
                                 });
                             }
 
@@ -238,32 +232,33 @@ public class MemberLibraryController {
         }
     }
 
-    private int determineItemType(Object object) {
-       if (object instanceof Book) {
+    private int determineItemType(LibraryItem item) {
+       if (item instanceof Book) {
            return 0;
-       } else if (object instanceof Movie) {
+       } else if (item instanceof Movie) {
           return 1;
-       } else if (object instanceof Game) {
+       } else if (item instanceof Game) {
            return 2;
-       } else if (object instanceof AudioBook){
+       } else if (item instanceof AudioBook){
            return 3;
        }
 
        return -999; // invalid object but should never happen
     }
+    private HBox determineItemHbox(LibraryItem item) {
 
-//    private Class<?> determineItemClass(Object object){
-//        if (object instanceof Book) {
-//            return new Class.forName(Book);
-//        } else if (object instanceof Movie) {
-//            return 1;
-//        } else if (object instanceof Game) {
-//            return 2;
-//        } else if (object instanceof AudioBook){
-//            return 3;
-//        }
-//
-//    }
+        if (item instanceof Book) {
+            return booksHBox;
+        } else if (item instanceof Movie) {
+            return moviesHBox;
+        } else if (item instanceof Game) {
+            return gamesHBox;
+        } else if (item instanceof AudioBook){
+            return audiobooksHBox;
+        }
+
+        return null; // will never happen
+    }
 
 
     @FXML
