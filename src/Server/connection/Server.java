@@ -108,9 +108,9 @@ public class Server {
             Thread objectReaderThread = new Thread(() -> {
                 try {
                     while (true) { // should have a while true to recieve objects?
-                        if ((objectRecieved = objectInputStream.readObject()) != null) {
+                        if ((objectRecieved = (LibraryItem) objectInputStream.readObject()) != null) {
                             System.out.println("server recieved object: " + objectRecieved);
-                            handleObject(objectRecieved, objectOutputStream);
+                            handleObject( (LibraryItem) objectRecieved, objectOutputStream);
                             inventory.printInventory();
 
                         }
@@ -124,49 +124,29 @@ public class Server {
         }
     }
 
-    private void handleObject(Object objectReceived, ObjectOutputStream objectOutputStream) {
+    private void handleObject(LibraryItem objectReceived, ObjectOutputStream objectOutputStream) {
+      // changing this to be more general to support different types of items
+        int itemType = inventory.determineItemType( (LibraryItem) objectReceived);
 
-//        int itemType = inventory.determineItemType( (LibraryItem) objectReceived);
-//
-//        if ((inventory.inventoryLists.get(itemType).get(objectReceived).title) == null) {
-//
-//        }
+        if ((inventory.inventoryLists.get(itemType).get((objectReceived).title) == null)) {
+            inventory.updateItem( objectReceived);
+        } else {
+            if ((objectReceived).numCopies > 0) {
 
-        if (objectReceived instanceof Book) {
-
-            // if book does not exist in server inventory - add the item
-            if (inventory.bookList.get(((Book) objectReceived).title) == null) {
-
-                inventory.updateItem((Book) objectReceived);
-
-            } else { // item is in inventory, see how to update depending on if adding or removing
-
-                if (((Book) objectReceived).numCopies > 0) { // adding item to inventory
+                inventory.updateItem(objectReceived);
+                sendToAllClients( inventory.inventoryLists.get(itemType).get(( objectReceived).title) , objectOutputStream);
+            } else {
+                int currentBooksInInventory =(inventory.inventoryLists.get(itemType).get(( objectReceived).title).numCopies);
+                if (  (currentBooksInInventory - Math.abs((objectReceived).numCopies)) >= 0  ) { // ((Book) objectReceived).numCopies) >= 0
                     // TODO: May need to synchronize this so multiple clients cannot get same item
-                    inventory.updateItem((Book) objectReceived);
-                    sendToAllClients( inventory.bookList.get(((Book) objectReceived).title) , objectOutputStream);
-
-                } else { // attempt to borrow that many copies of book
-                    System.out.println("decrease item");
-                    int currentBooksInInventory =(inventory.bookList.get(((Book) objectReceived).title).numCopies);
-
-                    // NOTE: summing them because now objectRecieved.numCopies is negative so (positive + (-number))
-                    if (  (currentBooksInInventory - Math.abs(((Book) objectReceived).numCopies)) >= 0  ) { // ((Book) objectReceived).numCopies) >= 0
-                        // TODO: May need to synchronize this so multiple clients cannot get same item
-                        inventory.updateItem((Book) objectReceived);
-                        sendToAllClients( inventory.bookList.get(((Book) objectReceived).title) , objectOutputStream);
-
-                    } else {
-                        System.out.println("cannot borrow item");
-                    }
-
+                    inventory.updateItem( objectReceived);
+                    sendToAllClients( inventory.inventoryLists.get(itemType).get(( objectReceived).title) , objectOutputStream);
+                    System.out.println("sending to all clients: " + objectReceived);
+                } else {
+                    System.out.println("cannot borrow item");
                 }
-
             }
         }
-
-        // TODO: handle different types of library items later
-
     }
 
 

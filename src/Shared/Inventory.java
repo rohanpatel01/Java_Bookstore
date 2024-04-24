@@ -72,8 +72,10 @@ public class Inventory {
 
     public void updateItem(LibraryItem item) {
         if (inventoryLists.get(item.itemType).get(item.title) != null) {
+            System.out.println("increasing item");
             inventoryLists.get(item.itemType).get(item.title).numCopies += item.numCopies;
         } else {
+            System.out.println("creating item");
             inventoryLists.get(item.itemType).put(item.title, item);
         }
     }
