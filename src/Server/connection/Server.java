@@ -74,10 +74,10 @@ public class Server {
 //            inventoryLists.add(inventory.gameList);
 //            inventoryLists.add(inventory.audiobookList);
 
-//            Book starterBook = new Book("Glass_Castle", "good book", "J. Walls", 288, 5); // making _ we will parse this out later
-//            Book otherBook = new Book("Atomic Habits Book", "be better", "Author Atomic Habits", 19, 5); // making _ we will parse this out later
-//            inventory.bookList.put(starterBook.title, starterBook);
-//            inventory.bookList.put(otherBook .title, otherBook );
+            Book starterBook = new Book("Glass_Castle", "good book", "J. Walls", 288, 5); // making _ we will parse this out later
+            Book otherBook = new Book("Atomic Habits Book", "be better", "Author Atomic Habits", 19, 5); // making _ we will parse this out later
+            inventory.bookList.put(starterBook.title, starterBook);
+            inventory.bookList.put(otherBook .title, otherBook );
 
             for (int i = 0; i < inventory.inventoryLists.size(); i++) {
                 for (String s : inventory.inventoryLists.get(i).keySet()){

@@ -136,82 +136,38 @@ public class MemberLibraryController {
 
     // TODO: make something general that just sends over to server and adds to card without worrying about it
     @FXML
-    public void bookSelected(ActionEvent event) {  // , Book inventoryBookSelected
+    public void bookSelected(ActionEvent event) {
 
-       // how to know what type of item is based on the button
-       // can the button store the type of item it is?
-//        LibraryItem copy;
         Button triggeredButton = (Button) event.getSource();
+        LibraryItem copy = null;
 
-        // determine what type of library item we are acting on so we know what to send over
-//        if (triggeredButton.getUserData().equals(0)) {
-//            LibraryItem libraryItemCheckedout = (Book) inventory.bookList.get(triggeredButton.getParent().getId());
-//        }
-        Book inventoryBook = (Book) inventory.bookList.get(triggeredButton.getParent().getId());
-        Book checkoutBook = new Book(inventoryBook.title, inventoryBook.summaryDescription, inventoryBook.author, inventoryBook.numPages, 1);
+        if (triggeredButton.getUserData().equals(0)) {
+            Book item = (Book) inventory.bookList.get(triggeredButton.getParent().getId());
+            copy = new Book(item.title, item.summaryDescription, item.author, item.numPages, 1);
+        } else if (triggeredButton.getUserData().equals(1)) {
+            // TODO: issue cannot have
+            Movie item = (Movie) inventory.movieList.get(triggeredButton.getParent().getId());
+            copy = new Movie(item.title, item.summaryDescription, item.movieRunTime, item.director, 1);
+        } else if (triggeredButton.getUserData().equals(2)) {
+            Game item = (Game) inventory.gameList.get(triggeredButton.getParent().getId());
+            copy = new Game(item.title, item.summaryDescription, item.developerStudio, 1);
+        } else if (triggeredButton.getUserData().equals(3)) {
+            AudioBook item = (AudioBook) inventory.audiobookList.get(triggeredButton.getParent().getId());
+            copy = new AudioBook(item.title, item.summaryDescription, item.narrator, 1);
+        }
 
         try {
-            checkoutBook.numCopies = -1; // so server can process as removing from inventory
-            objectOutputStream.writeObject(checkoutBook);
+            copy.numCopies = -1; // so server can process as removing from inventory
+            objectOutputStream.writeObject(copy);
             objectOutputStream.flush();
 
         } catch (IOException ioe) { ioe.printStackTrace(); }
 
-        checkoutBook.numCopies = 1;
-        addItemToCart(checkoutBook);
-
+        copy.numCopies = 1;
+        addItemToCart(copy);
     }
-//    @FXML
-//    public void gameSelected() {
-//        System.out.println("Game selected");
-//        System.out.println("controller socket: " + client.clientSocket);
-//
-//        Game game = new Game("League of Legends", "try to have fun", "Riot");
-//
-//        try {
-//            objectOutputStream.writeObject(game);
-//            objectOutputStream.flush();
-//
-//        } catch (IOException ioe) {
-//            ioe.printStackTrace();
-//        }
-//
-//    }
 
-//    @FXML
-//    public void movieSelected() {
-//        System.out.println("Movie selected");
-//
-//        Movie movie = new Movie("Your Name", "Great movie", "1:26:00", "Makoto Shinkai");
-//
-//        System.out.println("controller socket: " + client.clientSocket);
-//        try {
-//            objectOutputStream.writeObject(movie);
-//            objectOutputStream.flush();
-//
-//        } catch (IOException ioe) {
-//            ioe.printStackTrace();
-//        }
-//
-//    }
-
-//    @FXML
-//    public void audiobookSelected() {
-//        System.out.println("Audiobook selected");
-//
-//        AudioBook audioBook = new AudioBook("AtomicHabits_audiobook", "good self help", "narrator for atomic habits");
-//
-//        System.out.println("controller socket: " + client.clientSocket);
-//        try {
-//            objectOutputStream.writeObject(audioBook);
-//            objectOutputStream.flush();
-//
-//        } catch (IOException ioe) {
-//            ioe.printStackTrace();
-//        }
-//
-//    }
-
+    // TODO: need to generalize this to be able to handle all types of objects
     @FXML
     public void returnBook(ActionEvent event){
         // send same book but with 1 as numCopies so server knows to add it to inventory
@@ -247,15 +203,6 @@ public class MemberLibraryController {
 
         } catch (IOException ioe) { ioe.printStackTrace(); }
 
-//        item.numCopies = 1;
-//        try {
-//            objectOutputStream.writeObject(item);
-//            objectOutputStream.flush();
-//
-//        } catch (IOException ioe) {
-//            ioe.printStackTrace();
-//        }
-        // need to delete button (should be entire book/item card once made)
 
     }
 
@@ -287,20 +234,6 @@ public class MemberLibraryController {
         }
     }
 
-
-//    private int determineItemType(LibraryItem item) {
-//       if (item instanceof Book) {
-//           return 0;
-//       } else if (item instanceof Movie) {
-//          return 1;
-//       } else if (item instanceof Game) {
-//           return 2;
-//       } else if (item instanceof AudioBook){
-//           return 3;
-//       }
-//
-//       return -999; // invalid object but should never happen
-//    }
 
     private HBox determineItemHbox(LibraryItem item) {
 

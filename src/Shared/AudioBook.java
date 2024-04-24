@@ -2,7 +2,7 @@ package Shared;
 
 public class AudioBook extends LibraryItem {
 
-    private String narrator;
+    public String narrator;
 
     public AudioBook(String title, String summaryDescription, String narrator, int numCopies){
         super(3, title, summaryDescription, numCopies);

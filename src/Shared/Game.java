@@ -2,7 +2,7 @@ package Shared;
 
 public class Game extends LibraryItem {
 
-    private String developerStudio;
+    public String developerStudio;
     public Game (String title, String summaryDescription, String developerStudio, int numCopies) {
         super(2, title, summaryDescription, numCopies);
         this.developerStudio = developerStudio;

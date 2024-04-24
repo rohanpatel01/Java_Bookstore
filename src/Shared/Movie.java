@@ -2,8 +2,8 @@ package Shared;
 
 public class Movie extends LibraryItem {
 
-    private String movieRunTime;
-    private String director;
+    public String movieRunTime;
+    public String director;
 
     public Movie (String title, String summaryDescription, String movieRunTime, String director, int numCopies) {
 
