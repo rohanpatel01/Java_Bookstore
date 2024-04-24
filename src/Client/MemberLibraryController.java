@@ -118,7 +118,7 @@ public class MemberLibraryController {
                                 Button checkoutButton = new Button( ( objectRecievedFromServer).title + ( objectRecievedFromServer).numCopies );
                                 checkoutButton.setUserData(itemIndex);
                                 // give the button some user data so we can tell later what type of object the button corresponds to
-                                checkoutButton.setOnAction(event -> bookSelected(event));  // , (Book) objectRecievedFromServer)
+                                checkoutButton.setOnAction(event -> itemSelected(event));  // , (Book) objectRecievedFromServer)
                                 Platform.runLater(() -> {
                                     createdBookCard.getChildren().add(checkoutButton);
                                     itemHbox.getChildren().add(createdBookCard);
@@ -136,9 +136,10 @@ public class MemberLibraryController {
 
     // TODO: make something general that just sends over to server and adds to card without worrying about it
     @FXML
-    public void bookSelected(ActionEvent event) {
+    public void itemSelected(ActionEvent event) {
 
         Button triggeredButton = (Button) event.getSource();
+        // TODO: just to make pretty see if can use item type by creating variable and using below
         LibraryItem copy = null;
 
         if (triggeredButton.getUserData().equals(0)) {
@@ -170,39 +171,56 @@ public class MemberLibraryController {
     // TODO: need to generalize this to be able to handle all types of objects
     @FXML
     public void returnBook(ActionEvent event){
-        // send same book but with 1 as numCopies so server knows to add it to inventory
-
-        // get whatever item that caused the event
+        // todo: this is goofy look at this again
         Button returnBookButton =  (Button) event.getSource();
+        int itemType = (int) returnBookButton.getUserData();
         HBox cartBookCard = (HBox) returnBookButton.getParent();
-        String bookItemName = cartBookCard.getId();
-        Book itemBook = (Book) cart.cartItems.get(bookItemName);
-        int count = itemBook.numCopies -= 1;
+        String itemName = cartBookCard.getId();
+        LibraryItem copy = null;
+        int count; // should never be default
 
-        Book bookCopy = new Book(itemBook.title, itemBook.summaryDescription, itemBook.author, itemBook.numPages, 1);
+        if (itemType == 0) {
+            Book item = (Book) cart.cartItems.get(itemName);
+            count = item.numCopies -= 1;
+            copy = new Book(item.title, item.summaryDescription, item.author, item.numPages, 1);
+        } else if (itemType == 1) {
+            Movie item = (Movie) cart.cartItems.get(itemName);
+            count = item.numCopies -= 1;
+            copy = new Movie(item.title, item.summaryDescription, item.movieRunTime, item.director, 1);
+        } else if (itemType == 2) {
+            Game item = (Game) cart.cartItems.get(itemName);
+            count = item.numCopies -= 1;
+            copy = new Game(item.title, item.summaryDescription, item.developerStudio, 1);
+        } else if (itemType == 3) {
+            AudioBook item = (AudioBook) cart.cartItems.get(itemName);
+            count = item.numCopies -= 1;
+            copy = new AudioBook(item.title, item.summaryDescription, item.narrator, 1);
+        } else {
+            System.out.println("badddddd");
+            count = -99; // should never happen
+        }
 
-        // TODO: fix issue due to ^^^, wont send the last item
         if (count <= 0) {
             Platform.runLater(() -> {
-                cart.cartItems.remove(bookItemName); // need to remove from cart as well
+                cart.cartItems.remove(itemName); // need to remove from cart as well
                 cartVBox.getChildren().remove(cartBookCard);
                 System.out.println("removing card");
 
             });
         } else {
             Platform.runLater(() -> {
-                String newButtonName = bookItemName + " " + count;
+                String newButtonName = itemName  + " " + count;
                 returnBookButton.setText(newButtonName);
             });
 
         }
 
         try {
-            objectOutputStream.writeObject(bookCopy);
+            System.out.println("sending: " + copy);
+            objectOutputStream.writeObject(copy);
             objectOutputStream.flush();
 
         } catch (IOException ioe) { ioe.printStackTrace(); }
-
 
     }
 
@@ -228,6 +246,7 @@ public class MemberLibraryController {
             HBox cartCardHBox = new HBox();
             cartCardHBox.setId(item.title);
             Button returnButton = new Button( item.title + " " + item.numCopies );
+            returnButton.setUserData(item.itemType); // set the item type for the returnButton so we know what item we're dealing with
             returnButton.setOnAction(event -> returnBook(event));  // , (Book) objectRecievedFromServer)
             cartCardHBox .getChildren().add(returnButton);
             cartVBox.getChildren().add(cartCardHBox);
