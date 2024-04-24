@@ -39,23 +39,6 @@ public class Inventory {
 
     }
 
-//    public void addToInventory(Object objectRecieved) {
-//
-//
-//        if (objectRecieved instanceof Book) {
-//            addBook((Book) objectRecieved);
-//
-//        } else if (objectRecieved instanceof Movie) {
-//            addMovie((Movie) objectRecieved);
-//
-//        } else if (objectRecieved instanceof Game) {
-//            addGame((Game) objectRecieved);
-//
-//        } else if (objectRecieved instanceof AudioBook) {
-//            addAudiobook((AudioBook) objectRecieved);
-//        }
-//
-//    }
 
 
     public void printInventory() {
@@ -87,19 +70,27 @@ public class Inventory {
 
     }
 
-    public void updateBook(Book item) {
-        if (bookList.get(item.title) != null) { // if book already in inventory
-
-            // just update numCopies to be sum of current and new item numCopies
-            // the client and server will handle if we are able to or not
-            // ^^ they will only do so if the book in inventory will only be 0 or above, will never let go negative
-            bookList.get(item.title).numCopies += item.numCopies;
-
-        } else { // new book
-            bookList.put(item.title, item);
+    public void updateItem(LibraryItem item) {
+        if (inventoryLists.get(item.itemType).get(item.title) != null) {
+            inventoryLists.get(item.itemType).get(item.title).numCopies += item.numCopies;
+        } else {
+            inventoryLists.get(item.itemType).put(item.title, item);
         }
-
     }
+
+//    public void updateBook(Book item) {
+//        if (bookList.get(item.title) != null) { // if book already in inventory
+//
+//            // just update numCopies to be sum of current and new item numCopies
+//            // the client and server will handle if we are able to or not
+//            // ^^ they will only do so if the book in inventory will only be 0 or above, will never let go negative
+//            bookList.get(item.title).numCopies += item.numCopies;
+//
+//        } else { // new book
+//            bookList.put(item.title, item);
+//        }
+//
+//    }
 
     public void addMovie(Movie item) {
 //        if (movieList.get(item.title) == null) {
@@ -125,6 +116,20 @@ public class Inventory {
 //        audiobookList.get(item.title).add(item);
     }
 
+    public int determineItemType(LibraryItem item) {
+
+       if (item instanceof Book) {
+           return 0;
+       } else if (item instanceof Movie) {
+          return 1;
+       } else if (item instanceof Game) {
+           return 2;
+       } else if (item instanceof AudioBook){
+           return 3;
+       }
+
+       return -999; // invalid object but should never happen
+    }
     // have more methods to checkout book, game, audiobook, movie?
     // when user checks out book remove it from this list or maybe even have a map from itemID to the object? but then can't
 }

@@ -4,12 +4,8 @@ public class AudioBook extends LibraryItem {
 
     private String narrator;
 
-    public AudioBook(String title, String summaryDescription, String narrator ){
-//        super(title, summaryDescription);
-//        this.itemID = LibraryItem.LIBRARY_ID;
-//        LibraryItem.LIBRARY_ID += 1;
-
-        this.itemType = "AUDIOBOOK";
+    public AudioBook(String title, String summaryDescription, String narrator, int numCopies){
+        super(3, title, summaryDescription, numCopies);
         this.narrator = narrator;
     }
 

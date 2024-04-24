@@ -5,13 +5,10 @@ public class Movie extends LibraryItem {
     private String movieRunTime;
     private String director;
 
-    public Movie (String title, String summaryDescription, String movieRunTime, String director) {
+    public Movie (String title, String summaryDescription, String movieRunTime, String director, int numCopies) {
 
-//        super(title, summaryDescription);
-//        this.itemID = LibraryItem.LIBRARY_ID;
-//        LibraryItem.LIBRARY_ID += 1;
+        super(1, title, summaryDescription, numCopies);
 
-        this.itemType = "MOVIE";
         this.movieRunTime = movieRunTime;
         this.director = director;
     }

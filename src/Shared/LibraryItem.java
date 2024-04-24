@@ -10,7 +10,7 @@ public abstract class LibraryItem implements Serializable {
     public String title;
     public String summaryDescription;
     public boolean isAvailable;
-    public String itemType;
+    public int itemType;
 
     public int numberCopiesRemaining;
     public List<String> pastMembers;
@@ -21,7 +21,6 @@ public abstract class LibraryItem implements Serializable {
         title = "";
         summaryDescription = "";
         isAvailable = true;
-        itemType = "DEFAULT";
         numberCopiesRemaining = 1;
         pastMembers = new ArrayList<>();
         memberCurrentlyCheckingOut = "";
@@ -29,8 +28,9 @@ public abstract class LibraryItem implements Serializable {
         numCopies = 0;
     }
 
-    public LibraryItem(String title, String summaryDescription, int numCopies) {
+    public LibraryItem(int itemType, String title, String summaryDescription, int numCopies) {
         this();
+        this.itemType = itemType;
         this.title = title;
         this.summaryDescription = summaryDescription;
         this.numCopies = numCopies;

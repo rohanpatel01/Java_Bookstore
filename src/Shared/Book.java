@@ -8,9 +8,9 @@ public class Book extends LibraryItem implements Serializable {
 
      public Book(String title, String summaryDescription, String author, int numPages, int numCopies) {
 
-         super(title, summaryDescription, numCopies);
+         super(0, title, summaryDescription, numCopies);
 
-         this.itemType = "BOOK";
+//         this.itemType = "BOOK";
          this.author = author;
          this.numPages = numPages;
     }

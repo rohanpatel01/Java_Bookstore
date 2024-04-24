@@ -126,18 +126,24 @@ public class Server {
 
     private void handleObject(Object objectReceived, ObjectOutputStream objectOutputStream) {
 
+//        int itemType = inventory.determineItemType( (LibraryItem) objectReceived);
+//
+//        if ((inventory.inventoryLists.get(itemType).get(objectReceived).title) == null) {
+//
+//        }
+
         if (objectReceived instanceof Book) {
 
             // if book does not exist in server inventory - add the item
             if (inventory.bookList.get(((Book) objectReceived).title) == null) {
 
-                inventory.updateBook((Book) objectReceived);
+                inventory.updateItem((Book) objectReceived);
 
             } else { // item is in inventory, see how to update depending on if adding or removing
 
                 if (((Book) objectReceived).numCopies > 0) { // adding item to inventory
                     // TODO: May need to synchronize this so multiple clients cannot get same item
-                    inventory.updateBook((Book) objectReceived);
+                    inventory.updateItem((Book) objectReceived);
                     sendToAllClients( inventory.bookList.get(((Book) objectReceived).title) , objectOutputStream);
 
                 } else { // attempt to borrow that many copies of book
@@ -147,7 +153,7 @@ public class Server {
                     // NOTE: summing them because now objectRecieved.numCopies is negative so (positive + (-number))
                     if (  (currentBooksInInventory - Math.abs(((Book) objectReceived).numCopies)) >= 0  ) { // ((Book) objectReceived).numCopies) >= 0
                         // TODO: May need to synchronize this so multiple clients cannot get same item
-                        inventory.updateBook((Book) objectReceived);
+                        inventory.updateItem((Book) objectReceived);
                         sendToAllClients( inventory.bookList.get(((Book) objectReceived).title) , objectOutputStream);
 
                     } else {
