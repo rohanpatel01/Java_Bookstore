@@ -22,11 +22,21 @@ public class Inventory {
     public Map<String, LibraryItem > gameList;
     public Map<String, LibraryItem > audiobookList;
 
+    public List<Map<String, LibraryItem>> inventoryLists;
+
+
     public Inventory() {
         bookList = new HashMap<>();
         movieList = new HashMap<>();
         gameList = new HashMap<>();
         audiobookList = new HashMap<>();
+
+        inventoryLists = new ArrayList<>();
+        inventoryLists.add(bookList);
+        inventoryLists.add(movieList);
+        inventoryLists.add(gameList);
+        inventoryLists.add(audiobookList);
+
     }
 
 //    public void addToInventory(Object objectRecieved) {

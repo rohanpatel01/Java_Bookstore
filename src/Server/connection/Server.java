@@ -68,21 +68,21 @@ public class Server {
        public void run() {
             // send to just the client - should be asynchronous since was run in a thread
 
-            List<Map<String, LibraryItem>> inventoryLists = new ArrayList<>();
-            inventoryLists.add(inventory.bookList);
-            inventoryLists.add(inventory.movieList);
-            inventoryLists.add(inventory.gameList);
-            inventoryLists.add(inventory.audiobookList);
+//            List<Map<String, LibraryItem>> inventoryLists = new ArrayList<>();
+//            inventoryLists.add(inventory.bookList);
+//            inventoryLists.add(inventory.movieList);
+//            inventoryLists.add(inventory.gameList);
+//            inventoryLists.add(inventory.audiobookList);
 
 //            Book starterBook = new Book("Glass_Castle", "good book", "J. Walls", 288, 5); // making _ we will parse this out later
 //            Book otherBook = new Book("Atomic Habits Book", "be better", "Author Atomic Habits", 19, 5); // making _ we will parse this out later
 //            inventory.bookList.put(starterBook.title, starterBook);
 //            inventory.bookList.put(otherBook .title, otherBook );
 
-            for (int i = 0; i < inventoryLists.size(); i++) {
-                for (String s : inventoryLists.get(i).keySet()){
+            for (int i = 0; i < inventory.inventoryLists.size(); i++) {
+                for (String s : inventory.inventoryLists.get(i).keySet()){
                     try {
-                        objectOutputStream.writeObject(inventoryLists.get(i).get(s));
+                        objectOutputStream.writeObject(inventory.inventoryLists.get(i).get(s));
                         objectOutputStream.flush();
                     } catch (IOException e) { throw new RuntimeException(e); }
                 }

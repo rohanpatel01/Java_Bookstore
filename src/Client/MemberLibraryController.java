@@ -30,7 +30,7 @@ public class MemberLibraryController {
     ObjectOutputStream objectOutputStream;
     ObjectInputStream objectInputStream;
     Inventory inventory;
-    Object objectRecievedFromServer;
+    LibraryItem objectRecievedFromServer;
     Cart cart;
 
     @FXML
@@ -76,14 +76,21 @@ public class MemberLibraryController {
        public void run() {
            while (true) {
                try {
-                   if ((objectRecievedFromServer = objectInputStream.readObject()) != null) {
-                       inventory.bookList.put(((Book) objectRecievedFromServer).title, (Book) objectRecievedFromServer);
+                   // allow for all types of items
+                   // based on what type of item - have method to determine type then make index correct one for inventory big
+                    // need to change what hbox we target based on what type of item it is
+
+                   if ((objectRecievedFromServer = (LibraryItem) objectInputStream.readObject()) != null) {
+
+                       int itemIndex = determineItemType(objectRecievedFromServer);
+
+                       inventory.inventoryLists.get(itemIndex).put(( objectRecievedFromServer).title, objectRecievedFromServer);
                        System.out.println("recieved object: ");
                        inventory.printInventory();
                        cart.printCart();
-                       if ( inventory.bookList.get(((Book) objectRecievedFromServer).title).numCopies <= 0) { //((Book) objectRecievedFromServer).numCopies
+                       if ( inventory.inventoryLists.get(itemIndex).get(( objectRecievedFromServer).title).numCopies <= 0) { //((Book) objectRecievedFromServer).numCopies
                             for (Node node : booksHBox.getChildren()) {
-                                if (node.getId() != null && node.getId().equals(((Book) objectRecievedFromServer).title)) {
+                                if (node.getId() != null && node.getId().equals(( objectRecievedFromServer).title)) {
 //                                    System.out.println("delete node");
                                     Platform.runLater(() -> {
 //                                        System.out.println("remove: " + node);
@@ -99,11 +106,11 @@ public class MemberLibraryController {
 
                             for (Node node : booksHBox.getChildren()) {
                                 // if item exists update the number on card to whatever the number of copies was given from server
-                                if (node.getId() != null && node.getId().equals(((Book) objectRecievedFromServer).title)) {
+                                if (node.getId() != null && node.getId().equals( objectRecievedFromServer.title)) {
                                    isCardPresent = true;
 //                                    System.out.println("updating number on card");
                                     Platform.runLater(() -> {
-                                        String newButtonName = (((Book) objectRecievedFromServer).title) +(((Book) objectRecievedFromServer).numCopies)  + "";
+                                        String newButtonName = (( objectRecievedFromServer).title) +(( objectRecievedFromServer).numCopies)  + "";
                                         ((Button) node.lookup(".button")).setText(newButtonName);
                                     });
                                 }
@@ -112,8 +119,8 @@ public class MemberLibraryController {
                             if (!isCardPresent) {
                                 System.out.println("create card");
                                 HBox createdBookCard = new HBox();
-                                createdBookCard.setId(((Book) objectRecievedFromServer).title);
-                                Button checkoutButton = new Button( ((Book) objectRecievedFromServer).title + ((Book) objectRecievedFromServer).numCopies );
+                                createdBookCard.setId(( objectRecievedFromServer).title);
+                                Button checkoutButton = new Button( ( objectRecievedFromServer).title + ( objectRecievedFromServer).numCopies );
                                 System.out.println("create card object: " + objectRecievedFromServer);
                                 checkoutButton.setOnAction(event -> bookSelected(event));  // , (Book) objectRecievedFromServer)
                                 Platform.runLater(() -> {
@@ -124,7 +131,6 @@ public class MemberLibraryController {
 
                         }
                    }
-//                       inventory.printInventory();
 
                }  catch (IOException| ClassNotFoundException  exception) {exception.printStackTrace(); }
            }
@@ -231,6 +237,34 @@ public class MemberLibraryController {
             cartVBox.getChildren().add(cartCardHBox);
         }
     }
+
+    private int determineItemType(Object object) {
+       if (object instanceof Book) {
+           return 0;
+       } else if (object instanceof Movie) {
+          return 1;
+       } else if (object instanceof Game) {
+           return 2;
+       } else if (object instanceof AudioBook){
+           return 3;
+       }
+
+       return -999; // invalid object but should never happen
+    }
+
+//    private Class<?> determineItemClass(Object object){
+//        if (object instanceof Book) {
+//            return new Class.forName(Book);
+//        } else if (object instanceof Movie) {
+//            return 1;
+//        } else if (object instanceof Game) {
+//            return 2;
+//        } else if (object instanceof AudioBook){
+//            return 3;
+//        }
+//
+//    }
+
 
     @FXML
     public void returnBook(ActionEvent event){
