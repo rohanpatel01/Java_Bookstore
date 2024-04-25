@@ -30,31 +30,11 @@ public class Inventory {
     public List<Map<String, LibraryItem>> inventoryLists;
 
 
-
-    private static MongoClient mongo;
-    private static MongoDatabase database;
-    private static MongoCollection<Book> bookCollection;
-    private static MongoCollection<Movie> movieCollection;
-    private static MongoCollection<Game> gameCollection;
-    private static MongoCollection<AudioBook> audiobookCollection;
-    public ArrayList<MongoCollection> allCollections;
-
-
-    // change password
-    private static final String URI = "mongodb+srv://rohanppatel01:mongoPassword@422-final-project.6ysknqg.mongodb.net/";
-    private static final String DB = "mongoInventory";
-    private static final String bookCollectionName = "books"; // the name of the collection defined in mongoDB
-    private static final String movieCollectionName = "movies"; // the name of the collection defined in mongoDB
-    private static final String gameCollectionName = "games"; // the name of the collection defined in mongoDB
-    private static final String audiobookCollectionName = "audiobooks"; // the name of the collection defined in mongoDB
-
-
     public Inventory() {
         bookList = new HashMap<>();
         movieList = new HashMap<>();
         gameList = new HashMap<>();
         audiobookList = new HashMap<>();
-        allCollections = new ArrayList<>();
 
         inventoryLists = new ArrayList<>();
         inventoryLists.add(bookList);
@@ -64,20 +44,6 @@ public class Inventory {
 
         // create mongoDB stuff
 
-        CodecProvider pojoCodecProvider = PojoCodecProvider.builder().automatic(true).build();
-        CodecRegistry pojoCodecRegistry = fromRegistries(getDefaultCodecRegistry(), fromProviders(pojoCodecProvider));
-        mongo = MongoClients.create(URI);
-        database = mongo.getDatabase(DB).withCodecRegistry(pojoCodecRegistry);
-
-        bookCollection = database.getCollection(bookCollectionName, Book.class);
-        movieCollection = database.getCollection(movieCollectionName, Movie.class);
-        gameCollection = database.getCollection(gameCollectionName, Game.class);
-        audiobookCollection = database.getCollection(audiobookCollectionName, AudioBook.class);
-
-        allCollections.add(bookCollection);
-        allCollections.add(movieCollection);
-        allCollections.add(gameCollection);
-        allCollections.add(audiobookCollection);
 
     }
 
@@ -122,13 +88,13 @@ public class Inventory {
             inventoryLists.get(item.itemType).get(item.title).numCopies += item.numCopies;
 
             if (item instanceof Book) {
-                bookCollection.findOneAndReplace(Filters.eq("title", item.title), (Book) inventoryLists.get(item.itemType).get(item.title));
+                MongoDBManager.bookCollection.findOneAndReplace(Filters.eq("title", item.title), (Book) inventoryLists.get(item.itemType).get(item.title));
             } else if (item instanceof Movie) {
-                movieCollection.findOneAndReplace(Filters.eq("title", item.title), (Movie) inventoryLists.get(item.itemType).get(item.title));
+                MongoDBManager.movieCollection.findOneAndReplace(Filters.eq("title", item.title), (Movie) inventoryLists.get(item.itemType).get(item.title));
             } else if (item instanceof Game) {
-                gameCollection.findOneAndReplace(Filters.eq("title", item.title), (Game) inventoryLists.get(item.itemType).get(item.title));
+                MongoDBManager.gameCollection.findOneAndReplace(Filters.eq("title", item.title), (Game) inventoryLists.get(item.itemType).get(item.title));
             } else if (item instanceof AudioBook) {
-                audiobookCollection.findOneAndReplace(Filters.eq("title", item.title), (AudioBook) inventoryLists.get(item.itemType).get(item.title));
+                MongoDBManager.audiobookCollection.findOneAndReplace(Filters.eq("title", item.title), (AudioBook) inventoryLists.get(item.itemType).get(item.title));
             }
 
         } else {
@@ -136,13 +102,13 @@ public class Inventory {
             inventoryLists.get(item.itemType).put(item.title, item);
 
             if (item instanceof Book) {
-               bookCollection.insertOne((Book) item);
+               MongoDBManager.bookCollection.insertOne((Book) item);
             } else if (item instanceof Movie) {
-                movieCollection.insertOne((Movie) item);
+                MongoDBManager.movieCollection.insertOne((Movie) item);
             } else if (item instanceof Game){
-                gameCollection.insertOne((Game) item);
+                MongoDBManager.gameCollection.insertOne((Game) item);
             } else if (item instanceof AudioBook) {
-                audiobookCollection.insertOne((AudioBook) item);
+                MongoDBManager.audiobookCollection.insertOne((AudioBook) item);
             }
 
         }

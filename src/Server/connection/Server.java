@@ -95,8 +95,8 @@ public class Server {
             // TODO: read items from mongo and update the inventory lists then everything should work as intended
             // TODO: just make sure when we add an item to inventory we also add it to the respective mongo database
 
-           for (int i = 0; i < inventory.allCollections.size(); i++) {
-               try (MongoCursor<LibraryItem> cursor = inventory.allCollections.get(i).find().iterator()) {
+           for (int i = 0; i < MongoDBManager.allCollections.size(); i++) {
+               try (MongoCursor<LibraryItem> cursor = MongoDBManager.allCollections.get(i).find().iterator()) {
                    while (cursor.hasNext()) {
                        LibraryItem nextItem = cursor.next();
                        if (nextItem instanceof Book) {
