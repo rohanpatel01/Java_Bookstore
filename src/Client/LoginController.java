@@ -46,16 +46,10 @@ public class LoginController {
     Button changeUserButton;
     @FXML
     Button exitButton;
-
-
-//    Client client;
-    Map<String, String> memberCredentials;
-    Map<String, String> adminCredentials;
     User user = new User();
 
     public LoginController() {
-        memberCredentials = new HashMap<>();
-        adminCredentials = new HashMap<>();
+
 
     }
 
@@ -67,36 +61,41 @@ public class LoginController {
         System.out.println("login button pressed ");
 
         // TODO: make this better by having helper methods
-        if (isAdmin) {
-            if (!(username.isEmpty() || password.isEmpty())) {
-                if ( adminCredentials.containsKey(username) && password.equals(adminCredentials.get(username)) ){
-                    System.out.println("login good");
-                    try {
-                        root = FXMLLoader.load(getClass().getResource("AdminLibrary.fxml"));
-                        stage = (Stage)((Node) event.getSource()).getScene().getWindow();
-                        scene = new Scene(root);
-                        stage.setScene(scene);
-                        stage.show();
-                    } catch (IOException ioException) { ioException.printStackTrace(); }
-                }
-            }
-        } else {
-            if (!(username.isEmpty() || password.isEmpty())) {
-                if ( memberCredentials.containsKey(username) && password.equals(memberCredentials.get(username)) ){
-                    System.out.println("login good");
-                    try {
-                        root = FXMLLoader.load(getClass().getResource("MemberLibrary.fxml"));
-                        stage = (Stage)((Node) event.getSource()).getScene().getWindow();
-                        scene = new Scene(root);
-                        stage.setScene(scene);
-                        //TODO: update userData for scene so can be passed into respective scene
-                        stage.show();
-                    } catch (IOException ioException) { ioException.printStackTrace(); }
-                }
-            }
 
+        if (!(username.isEmpty() || password.isEmpty())) {
+
+            try (MongoCursor<User> cursor = MongoDBManager.userCollection.find().iterator()) {
+                while (cursor.hasNext()) {
+                    User currentUser = cursor.next();
+                    if (currentUser.username.equals(username) && currentUser.password.equals(password)) {
+
+                       if (currentUser.isAdmin) { // admin login
+
+                           try {
+                               root = FXMLLoader.load(getClass().getResource("AdminLibrary.fxml"));
+                           } catch (IOException ioException) { ioException.printStackTrace(); }
+
+                       } else { // member login
+
+                           try {
+                               root = FXMLLoader.load(getClass().getResource("MemberLibrary.fxml"));
+                           } catch (IOException ioException) { ioException.printStackTrace(); }
+                       }
+
+                        // load user
+                        stage = (Stage)((Node) event.getSource()).getScene().getWindow();
+                        scene = new Scene(root);
+                        stage.setScene(scene);
+                        scene.setUserData(user);
+                        stage.show();
+
+
+                    } else {
+                        System.out.println("ERROR: wrong username or password. please try again");
+                    }
+                }
+            }
         }
-
     }
 
     @FXML
@@ -104,27 +103,29 @@ public class LoginController {
         String username = createUser.getText();
         String password = createPassword.getText();
 
-        try (MongoCursor<User> cursor = MongoDBManager.userCollection.find().iterator()) {
-            while (cursor.hasNext()) {
-                User currentUser = cursor.next();
-                if (currentUser.username.equals(username)) {
-                    System.out.println("ERROR: User already signed up");
-                    return;
-                }
-            }
-        }
-
 
         if (!(username.isEmpty()) || password.isEmpty()) {
+
+            try (MongoCursor<User> cursor = MongoDBManager.userCollection.find().iterator()) {
+                while (cursor.hasNext()) {
+                    User currentUser = cursor.next();
+                    if (currentUser.username.equals(username)) {
+                        System.out.println("ERROR: User already signed up");
+                        return;
+                    }
+                }
+            }
+
             if (isAdmin) {
-                adminCredentials.put(username, password);
+//                adminCredentials.put(username, password);
                 user = new User(username, password, true);
             } else {
-                memberCredentials.put(username, password);
+//                memberCredentials.put(username, password);
                 user = new User(username, password, false);
             }
             MongoDBManager.userCollection.insertOne(user);
         }
+
     }
 
     @FXML
