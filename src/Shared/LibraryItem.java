@@ -17,6 +17,7 @@ public abstract class LibraryItem implements Serializable {
     public String memberCurrentlyCheckingOut;
     public String lastTimeCheckedOut; // see what type this has to be and how we can get time
     public int numCopies;
+
     public LibraryItem() {
         title = "";
         summaryDescription = "";

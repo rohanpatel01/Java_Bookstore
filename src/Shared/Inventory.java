@@ -1,28 +1,50 @@
 package Shared;
 
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 import com.sun.xml.internal.ws.api.message.AddressingUtils;
+import org.bson.codecs.configuration.CodecProvider;
+import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.codecs.pojo.PojoCodecProvider;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.mongodb.MongoClientSettings.getDefaultCodecRegistry;
+import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
+import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
+
 public class Inventory {
 
-//    public enum ItemType {
-//        BookIndex,
-//        MovieIndex,
-//        GameIndex,
-//        AudiobookIndex
-//    }
 
-//    public static Map<ItemType, Map<Integer, ?>> inventoryList; // want this to be static but cannot access
     public Map<String, LibraryItem> bookList;
     public Map<String, LibraryItem> movieList;
     public Map<String, LibraryItem > gameList;
     public Map<String, LibraryItem > audiobookList;
 
     public List<Map<String, LibraryItem>> inventoryLists;
+
+
+
+    private static MongoClient mongo;
+    private static MongoDatabase database;
+    private static MongoCollection<Book> bookCollection;
+    private static MongoCollection<Movie> movieCollection;
+    private static MongoCollection<Game> gameCollection;
+    private static MongoCollection<AudioBook> audiobookCollection;
+
+    // change password
+    private static final String URI = "mongodb+srv://rohanppatel01:mongoPassword@422-final-project.6ysknqg.mongodb.net/";
+    private static final String DB = "mongoInventory";
+    private static final String bookCollectionName = "books"; // the name of the collection defined in mongoDB
+    private static final String movieCollectionName = "movies"; // the name of the collection defined in mongoDB
+    private static final String gameCollectionName = "games"; // the name of the collection defined in mongoDB
+    private static final String audiobookCollectionName = "audiobooks"; // the name of the collection defined in mongoDB
 
 
     public Inventory() {
@@ -36,6 +58,20 @@ public class Inventory {
         inventoryLists.add(movieList);
         inventoryLists.add(gameList);
         inventoryLists.add(audiobookList);
+
+        // create mongoDB stuff
+
+        CodecProvider pojoCodecProvider = PojoCodecProvider.builder().automatic(true).build();
+        CodecRegistry pojoCodecRegistry = fromRegistries(getDefaultCodecRegistry(), fromProviders(pojoCodecProvider));
+        mongo = MongoClients.create(URI);
+        database = mongo.getDatabase(DB).withCodecRegistry(pojoCodecRegistry);
+
+        bookCollection = database.getCollection(bookCollectionName, Book.class);
+        movieCollection = database.getCollection(movieCollectionName, Movie.class);
+        gameCollection = database.getCollection(gameCollectionName, Game.class);
+        audiobookCollection = database.getCollection(audiobookCollectionName, AudioBook.class);
+
+
 
     }
 
@@ -71,52 +107,42 @@ public class Inventory {
     }
 
     public void updateItem(LibraryItem item) {
+
+        // add item to mongodb and respective collection if not added
+        // otherwise update it
+
         if (inventoryLists.get(item.itemType).get(item.title) != null) {
             System.out.println("increasing item");
             inventoryLists.get(item.itemType).get(item.title).numCopies += item.numCopies;
+
+            if (item instanceof Book) {
+                bookCollection.findOneAndReplace(Filters.eq("title", item.title), (Book) inventoryLists.get(item.itemType).get(item.title));
+            } else if (item instanceof Movie) {
+                movieCollection.findOneAndReplace(Filters.eq("title", item.title), (Movie) inventoryLists.get(item.itemType).get(item.title));
+            } else if (item instanceof Game) {
+                gameCollection.findOneAndReplace(Filters.eq("title", item.title), (Game) inventoryLists.get(item.itemType).get(item.title));
+            } else if (item instanceof AudioBook) {
+                audiobookCollection.findOneAndReplace(Filters.eq("title", item.title), (AudioBook) inventoryLists.get(item.itemType).get(item.title));
+            }
+
         } else {
             System.out.println("creating item");
             inventoryLists.get(item.itemType).put(item.title, item);
+
+            if (item instanceof Book) {
+               bookCollection.insertOne((Book) item);
+            } else if (item instanceof Movie) {
+                movieCollection.insertOne((Movie) item);
+            } else if (item instanceof Game){
+                gameCollection.insertOne((Game) item);
+            } else if (item instanceof AudioBook) {
+                audiobookCollection.insertOne((AudioBook) item);
+            }
+
         }
     }
 
-//    public void updateBook(Book item) {
-//        if (bookList.get(item.title) != null) { // if book already in inventory
-//
-//            // just update numCopies to be sum of current and new item numCopies
-//            // the client and server will handle if we are able to or not
-//            // ^^ they will only do so if the book in inventory will only be 0 or above, will never let go negative
-//            bookList.get(item.title).numCopies += item.numCopies;
-//
-//        } else { // new book
-//            bookList.put(item.title, item);
-//        }
-//
-//    }
 
-    public void addMovie(Movie item) {
-//        if (movieList.get(item.title) == null) {
-//            movieList.put(item.title, new ArrayList<>());
-//        }
-//
-//        movieList.get(item.title).add(item);
-    }
-
-    public void addGame(Game item) {
-//        if (gameList.get(item.title) == null) {
-//            gameList.put(item.title, new ArrayList<>());
-//        }
-//
-//        gameList.get(item.title).add(item);
-    }
-
-    public void addAudiobook(AudioBook item) {
-//        if (audiobookList.get(item.title) == null) {
-//            audiobookList.put(item.title, new ArrayList<>());
-//        }
-//
-//        audiobookList.get(item.title).add(item);
-    }
 
     public int determineItemType(LibraryItem item) {
 
@@ -132,6 +158,4 @@ public class Inventory {
 
        return -999; // invalid object but should never happen
     }
-    // have more methods to checkout book, game, audiobook, movie?
-    // when user checks out book remove it from this list or maybe even have a map from itemID to the object? but then can't
 }

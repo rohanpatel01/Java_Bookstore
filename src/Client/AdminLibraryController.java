@@ -1,7 +1,6 @@
 package Client;
 
-import Shared.Book;
-import Shared.Inventory;
+import Shared.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -89,11 +88,11 @@ public class AdminLibraryController {
 
     public void AddBook() {
         System.out.println("book selected");
-        Book book = new Book("Glass Castle", "good book", "J. Walls", 288, 1);
+        Book item = new Book("Glass Castle", "good book", "J. Walls", 288, 1);
         try {
-            objectOutputStream.writeObject(book);
+            objectOutputStream.writeObject(item);
             objectOutputStream.flush();
-            System.out.println("sending: " + book);
+            System.out.println("sending: " + item);
 
         } catch (IOException ioe) {
             ioe.printStackTrace();
@@ -102,13 +101,43 @@ public class AdminLibraryController {
 
     public void AddMovie() {
 
+        System.out.println("book selected");
+        Movie item = new Movie("Your Name", "Great Movie", "1:00", "Some japanese dude", 1);
+        try {
+            objectOutputStream.writeObject(item);
+            objectOutputStream.flush();
+            System.out.println("sending: " + item);
+
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }        // send server the book and have it store in inventory
     }
 
     public void AddGame() {
 
+        System.out.println("book selected");
+        Game item = new Game("League of Legends", "dont solo q", "Riot", 1);
+        try {
+            objectOutputStream.writeObject(item);
+            objectOutputStream.flush();
+            System.out.println("sending: " + item);
+
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }        // send server the book and have it store in inventory
     }
 
     public void AddAudiobook() {
 
+        System.out.println("book selected");
+        AudioBook item = new AudioBook("A Court of Thorns and Roses", "Something Julian's GF would like I think", "some narrator", 1);
+        try {
+            objectOutputStream.writeObject(item);
+            objectOutputStream.flush();
+            System.out.println("sending: " + item);
+
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }        // send server the book and have it store in inventory
     }
 }

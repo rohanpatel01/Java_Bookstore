@@ -26,20 +26,6 @@ public class Server {
     Inventory inventory;
     ArrayList<Socket> clientList;
 
-    private static MongoClient mongo;
-    private static MongoDatabase database;
-    private static MongoCollection<Book> bookCollection;
-    private static MongoCollection<Movie> movieCollection;
-    private static MongoCollection<Game> gameCollection;
-    private static MongoCollection<AudioBook> audiobookCollection;
-
-    // change password
-    private static final String URI = "mongodb+srv://rohanppatel01:mongoPassword@422-final-project.6ysknqg.mongodb.net/";
-    private static final String DB = "mongoInventory";
-    private static final String bookCollectionName = "books"; // the name of the collection defined in mongoDB
-    private static final String movieCollectionName = "movies"; // the name of the collection defined in mongoDB
-    private static final String gameCollectionName = "games"; // the name of the collection defined in mongoDB
-    private static final String audiobookCollectionName = "audiobooks"; // the name of the collection defined in mongoDB
 
     public static void main(String[] args) {
         new Server().setupNetworking();
@@ -54,21 +40,10 @@ public class Server {
         clientList = new ArrayList<>();
         inventory = new Inventory();
 
-        CodecProvider pojoCodecProvider = PojoCodecProvider.builder().automatic(true).build();
-        CodecRegistry pojoCodecRegistry = fromRegistries(getDefaultCodecRegistry(), fromProviders(pojoCodecProvider));
-        mongo = MongoClients.create(URI);
-        database = mongo.getDatabase(DB).withCodecRegistry(pojoCodecRegistry);
-
-        bookCollection = database.getCollection(bookCollectionName, Book.class);
-        movieCollection = database.getCollection(movieCollectionName, Movie.class);
-        gameCollection = database.getCollection(gameCollectionName, Game.class);
-        audiobookCollection = database.getCollection(audiobookCollectionName, AudioBook.class);
 
 //        Book starterBook = new Book("Glass_Castle", "good book", "J. Walls", 288, 5); // making _ we will parse this out later
 //        bookCollection.insertOne(starterBook);
 
-
-        System.out.println("mongo server created mongo: " + mongo);
 
         try {
             ServerSocket server = new ServerSocket(1024);
@@ -119,6 +94,9 @@ public class Server {
 //            inventory.bookList.put(starterBook.title, starterBook);
 //            inventory.movieList.put(starterMovie.title, starterMovie);
 //            inventory.bookList.put(otherBook .title, otherBook );
+
+            // TODO: read items from mongo and update the inventory lists then everything should work as intended
+            // TODO: just make sure when we add an item to inventory we also add it to the respective mongo database
 
             for (int i = 0; i < inventory.inventoryLists.size(); i++) {
                 for (String s : inventory.inventoryLists.get(i).keySet()){
@@ -175,6 +153,7 @@ public class Server {
             if ((objectReceived).numCopies > 0) {
 
                 inventory.updateItem(objectReceived);
+
                 sendToAllClients( inventory.inventoryLists.get(itemType).get(( objectReceived).title) , objectOutputStream);
             } else {
                 int currentBooksInInventory =(inventory.inventoryLists.get(itemType).get(( objectReceived).title).numCopies);

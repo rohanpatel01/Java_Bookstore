@@ -6,6 +6,8 @@ public class Book extends LibraryItem implements Serializable {
     public int numPages;
     public String author;
 
+    public Book() {}
+
      public Book(String title, String summaryDescription, String author, int numPages, int numCopies) {
 
          super(0, title, summaryDescription, numCopies);

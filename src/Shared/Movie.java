@@ -5,6 +5,8 @@ public class Movie extends LibraryItem {
     public String movieRunTime;
     public String director;
 
+    public Movie() {}
+
     public Movie (String title, String summaryDescription, String movieRunTime, String director, int numCopies) {
 
         super(1, title, summaryDescription, numCopies);
