@@ -8,11 +8,38 @@ import java.util.List;
 import java.util.Map;
 
 import Shared.*;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
+import org.bson.codecs.configuration.CodecProvider;
+import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.codecs.pojo.PojoCodecProvider;
+
+import static com.mongodb.MongoClientSettings.getDefaultCodecRegistry;
+import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
+import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
 public class Server {
 
     Inventory inventory;
     ArrayList<Socket> clientList;
+
+    private static MongoClient mongo;
+    private static MongoDatabase database;
+    private static MongoCollection<Book> bookCollection;
+    private static MongoCollection<Movie> movieCollection;
+    private static MongoCollection<Game> gameCollection;
+    private static MongoCollection<AudioBook> audiobookCollection;
+
+    // change password
+    private static final String URI = "mongodb+srv://rohanppatel01:mongoPassword@422-final-project.6ysknqg.mongodb.net/";
+    private static final String DB = "mongoInventory";
+    private static final String bookCollectionName = "books"; // the name of the collection defined in mongoDB
+    private static final String movieCollectionName = "movies"; // the name of the collection defined in mongoDB
+    private static final String gameCollectionName = "games"; // the name of the collection defined in mongoDB
+    private static final String audiobookCollectionName = "audiobooks"; // the name of the collection defined in mongoDB
 
     public static void main(String[] args) {
         new Server().setupNetworking();
@@ -27,6 +54,21 @@ public class Server {
         clientList = new ArrayList<>();
         inventory = new Inventory();
 
+        CodecProvider pojoCodecProvider = PojoCodecProvider.builder().automatic(true).build();
+        CodecRegistry pojoCodecRegistry = fromRegistries(getDefaultCodecRegistry(), fromProviders(pojoCodecProvider));
+        mongo = MongoClients.create(URI);
+        database = mongo.getDatabase(DB).withCodecRegistry(pojoCodecRegistry);
+
+        bookCollection = database.getCollection(bookCollectionName, Book.class);
+        movieCollection = database.getCollection(movieCollectionName, Movie.class);
+        gameCollection = database.getCollection(gameCollectionName, Game.class);
+        audiobookCollection = database.getCollection(audiobookCollectionName, AudioBook.class);
+
+//        Book starterBook = new Book("Glass_Castle", "good book", "J. Walls", 288, 5); // making _ we will parse this out later
+//        bookCollection.insertOne(starterBook);
+
+
+        System.out.println("mongo server created mongo: " + mongo);
 
         try {
             ServerSocket server = new ServerSocket(1024);
@@ -58,6 +100,8 @@ public class Server {
         private ObjectOutputStream objectOutputStream;
         private Object objectRecieved;
 
+
+
         ClientInventoryUpdater(Socket clientSocket, ObjectOutputStream objectOutputStream, ObjectInputStream objectInputStream) {
             this.clientSocket = clientSocket;
             this.objectInputStream = objectInputStream;
@@ -66,19 +110,14 @@ public class Server {
 
         @Override
        public void run() {
-            // send to just the client - should be asynchronous since was run in a thread
 
-//            List<Map<String, LibraryItem>> inventoryLists = new ArrayList<>();
-//            inventoryLists.add(inventory.bookList);
-//            inventoryLists.add(inventory.movieList);
-//            inventoryLists.add(inventory.gameList);
-//            inventoryLists.add(inventory.audiobookList);
+            // TODO: look in the mongoDB and all elements here so can send to all clients
 
-            Book starterBook = new Book("Glass_Castle", "good book", "J. Walls", 288, 5); // making _ we will parse this out later
-            Movie starterMovie = new Movie("Your Name", "great movie","1:00", "some japanese dude", 5); // making _ we will parse this out later
-//            Book otherBook = new Book("Atomic Habits Book", "be better", "Author Atomic Habits", 19, 5); // making _ we will parse this out later
-            inventory.bookList.put(starterBook.title, starterBook);
-            inventory.movieList.put(starterMovie.title, starterMovie);
+//            Book starterBook = new Book("Glass_Castle", "good book", "J. Walls", 288, 5); // making _ we will parse this out later
+//            Movie starterMovie = new Movie("Your Name", "great movie","1:00", "some japanese dude", 5); // making _ we will parse this out later
+////            Book otherBook = new Book("Atomic Habits Book", "be better", "Author Atomic Habits", 19, 5); // making _ we will parse this out later
+//            inventory.bookList.put(starterBook.title, starterBook);
+//            inventory.movieList.put(starterMovie.title, starterMovie);
 //            inventory.bookList.put(otherBook .title, otherBook );
 
             for (int i = 0; i < inventory.inventoryLists.size(); i++) {
