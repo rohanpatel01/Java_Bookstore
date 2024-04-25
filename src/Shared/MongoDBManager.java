@@ -23,6 +23,7 @@ public class MongoDBManager {
     public static MongoCollection<Movie> movieCollection;
     public static MongoCollection<Game> gameCollection;
     public static MongoCollection<AudioBook> audiobookCollection;
+    public static MongoCollection<User> userCollection;
     public static ArrayList<MongoCollection> allCollections;
 
 
@@ -34,6 +35,7 @@ public class MongoDBManager {
     public static final String movieCollectionName = "movies"; // the name of the collection defined in mongoDB
     public static final String gameCollectionName = "games"; // the name of the collection defined in mongoDB
     public static final String audiobookCollectionName = "audiobooks"; // the name of the collection defined in mongoDB
+    public static final String userCollectionName = "users"; // the name of the collection defined in mongoDB
 
     static {
         allCollections = new ArrayList<>();
@@ -47,11 +49,14 @@ public class MongoDBManager {
         movieCollection = database.getCollection(movieCollectionName, Movie.class);
         gameCollection = database.getCollection(gameCollectionName, Game.class);
         audiobookCollection = database.getCollection(audiobookCollectionName, AudioBook.class);
+        userCollection = database.getCollection(userCollectionName, User.class);
 
         allCollections.add(bookCollection);
         allCollections.add(movieCollection);
         allCollections.add(gameCollection);
         allCollections.add(audiobookCollection);
+        // NOTE: not including userCollection in allCollections since server will loop through and add
+        // to respective array list, and we don't want this
     }
 
 

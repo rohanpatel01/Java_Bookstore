@@ -1,6 +1,7 @@
 package Client;
 
 import Shared.*;
+import com.mongodb.client.MongoCursor;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -50,6 +51,7 @@ public class LoginController {
 //    Client client;
     Map<String, String> memberCredentials;
     Map<String, String> adminCredentials;
+    User user = new User();
 
     public LoginController() {
         memberCredentials = new HashMap<>();
@@ -87,6 +89,7 @@ public class LoginController {
                         stage = (Stage)((Node) event.getSource()).getScene().getWindow();
                         scene = new Scene(root);
                         stage.setScene(scene);
+                        //TODO: update userData for scene so can be passed into respective scene
                         stage.show();
                     } catch (IOException ioException) { ioException.printStackTrace(); }
                 }
@@ -101,13 +104,26 @@ public class LoginController {
         String username = createUser.getText();
         String password = createPassword.getText();
 
+        try (MongoCursor<User> cursor = MongoDBManager.userCollection.find().iterator()) {
+            while (cursor.hasNext()) {
+                User currentUser = cursor.next();
+                if (currentUser.username.equals(username)) {
+                    System.out.println("ERROR: User already signed up");
+                    return;
+                }
+            }
+        }
+
 
         if (!(username.isEmpty()) || password.isEmpty()) {
             if (isAdmin) {
                 adminCredentials.put(username, password);
+                user = new User(username, password, true);
             } else {
                 memberCredentials.put(username, password);
+                user = new User(username, password, false);
             }
+            MongoDBManager.userCollection.insertOne(user);
         }
     }
 
