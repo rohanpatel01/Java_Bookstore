@@ -1,6 +1,8 @@
 package Shared;
 
-public class AudioBook extends LibraryItem {
+import java.io.Serializable;
+
+public class AudioBook extends LibraryItem implements Serializable {
 
     public String narrator;
 

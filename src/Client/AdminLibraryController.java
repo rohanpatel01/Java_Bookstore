@@ -143,7 +143,9 @@ public class AdminLibraryController {
     public void AddMovie() {
 
         System.out.println("book selected");
-        Movie item = new Movie("Your Name", "Great Movie", "1:00", "Some japanese dude", 1);
+//        Movie item = new Movie("Your Name", "Great Movie", "1:00", "Some japanese dude", 1);
+        Movie item = new Movie(movieTitle.getText(), movieDescription.getText(), movieRuntime.getText(), movieDirector.getText(),Integer.parseInt(movieNumCopies.getText()) );
+
         try {
             objectOutputStream.writeObject(item);
             objectOutputStream.flush();
@@ -157,7 +159,9 @@ public class AdminLibraryController {
     public void AddGame() {
 
         System.out.println("book selected");
-        Game item = new Game("League of Legends", "dont solo q", "Riot", 1);
+//        Game item = new Game("League of Legends", "dont solo q", "Riot", 1);
+        Game item = new Game(gameTitle.getText(), gameDescription.getText(), gameDeveloper.getText(), Integer.parseInt(gameNumCopies.getText() ));
+
         try {
             objectOutputStream.writeObject(item);
             objectOutputStream.flush();
@@ -171,7 +175,9 @@ public class AdminLibraryController {
     public void AddAudiobook() {
 
         System.out.println("book selected");
-        AudioBook item = new AudioBook("A Court of Thorns and Roses", "Something Julian's GF would like I think", "some narrator", 1);
+//        AudioBook item = new AudioBook("A Court of Thorns and Roses", "Something Julian's GF would like I think", "some narrator", 1);
+        AudioBook item = new AudioBook(audiobookTitle.getText(), audiobookDescription.getText(), audiobookNarrator.getText(), Integer.parseInt(audiobookNumCopies.getText() ));
+
         try {
             objectOutputStream.writeObject(item);
             objectOutputStream.flush();

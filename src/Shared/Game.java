@@ -1,6 +1,8 @@
 package Shared;
 
-public class Game extends LibraryItem {
+import java.io.Serializable;
+
+public class Game extends LibraryItem implements Serializable {
 
     public String developerStudio;
 

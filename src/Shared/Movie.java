@@ -1,6 +1,8 @@
 package Shared;
 
-public class Movie extends LibraryItem {
+import java.io.Serializable;
+
+public class Movie extends LibraryItem implements Serializable {
 
     public String movieRunTime;
     public String director;
