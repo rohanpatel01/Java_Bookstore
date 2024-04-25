@@ -37,6 +37,8 @@ public class Inventory {
     private static MongoCollection<Movie> movieCollection;
     private static MongoCollection<Game> gameCollection;
     private static MongoCollection<AudioBook> audiobookCollection;
+    public ArrayList<MongoCollection> allCollections;
+
 
     // change password
     private static final String URI = "mongodb+srv://rohanppatel01:mongoPassword@422-final-project.6ysknqg.mongodb.net/";
@@ -52,6 +54,7 @@ public class Inventory {
         movieList = new HashMap<>();
         gameList = new HashMap<>();
         audiobookList = new HashMap<>();
+        allCollections = new ArrayList<>();
 
         inventoryLists = new ArrayList<>();
         inventoryLists.add(bookList);
@@ -71,7 +74,10 @@ public class Inventory {
         gameCollection = database.getCollection(gameCollectionName, Game.class);
         audiobookCollection = database.getCollection(audiobookCollectionName, AudioBook.class);
 
-
+        allCollections.add(bookCollection);
+        allCollections.add(movieCollection);
+        allCollections.add(gameCollection);
+        allCollections.add(audiobookCollection);
 
     }
 

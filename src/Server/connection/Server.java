@@ -8,10 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import Shared.*;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.*;
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistry;
@@ -97,6 +94,26 @@ public class Server {
 
             // TODO: read items from mongo and update the inventory lists then everything should work as intended
             // TODO: just make sure when we add an item to inventory we also add it to the respective mongo database
+
+           for (int i = 0; i < inventory.allCollections.size(); i++) {
+               try (MongoCursor<LibraryItem> cursor = inventory.allCollections.get(i).find().iterator()) {
+                   while (cursor.hasNext()) {
+                       LibraryItem nextItem = cursor.next();
+                       if (nextItem instanceof Book) {
+                           inventory.bookList.put(nextItem.title, nextItem);
+                       } else if (nextItem instanceof Movie) {
+                           inventory.movieList.put(nextItem.title, nextItem);
+                       } else if (nextItem instanceof Game) {
+                           inventory.gameList.put(nextItem.title, nextItem);
+                       } else if (nextItem instanceof AudioBook) {
+                           inventory.audiobookList.put(nextItem.title, nextItem);
+                       }
+                   }
+               }
+           }
+
+            System.out.println("book size: " + inventory.bookList.size());
+
 
             for (int i = 0; i < inventory.inventoryLists.size(); i++) {
                 for (String s : inventory.inventoryLists.get(i).keySet()){
