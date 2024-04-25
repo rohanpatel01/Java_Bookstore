@@ -1,47 +1,133 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.AdminLibraryController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="577.0" prefWidth="755.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.AdminLibraryController">
    <children>
-      <GridPane fx:id="itemSelectionGridPane" gridLinesVisible="true" layoutX="10.0" layoutY="10.0" prefHeight="287.0" prefWidth="357.0">
-         <columnConstraints>
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-         </columnConstraints>
-         <rowConstraints>
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-         </rowConstraints>
+      <VBox layoutX="14.0" layoutY="29.0" prefHeight="483.0" prefWidth="357.0">
          <children>
-            <VBox layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0">
-               <children>
-                  <Button fx:id="bookButton" mnemonicParsing="false" onAction="#AddBook" prefHeight="96.0" prefWidth="182.0" text="Book" />
-               </children>
-            </VBox>
-            <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1">
-               <children>
-                  <Button fx:id="movieButton" mnemonicParsing="false" onAction="#AddMovie" prefHeight="105.0" prefWidth="185.0" text="Movie" />
-               </children>
-            </VBox>
-            <VBox prefHeight="200.0" prefWidth="100.0" GridPane.rowIndex="1">
-               <children>
-                  <Button fx:id="gameButton" mnemonicParsing="false" onAction="#AddGame" prefHeight="126.0" prefWidth="184.0" text="Game" />
-               </children>
-            </VBox>
-            <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
-               <children>
-                  <Button fx:id="audiobookButton" mnemonicParsing="false" onAction="#AddAudiobook" prefHeight="154.0" prefWidth="260.0" text="Audiobook" />
-               </children>
-            </VBox>
+            <ScrollPane prefHeight="99.0" prefWidth="396.0">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="99.0" prefWidth="354.0">
+                     <children>
+                        <HBox fx:id="booksHBox" prefHeight="81.0" prefWidth="343.0" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </ScrollPane>
+            <ScrollPane prefHeight="99.0" prefWidth="389.0">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="99.0" prefWidth="359.0">
+                     <children>
+                        <HBox fx:id="moviesHBox" prefHeight="83.0" prefWidth="339.0" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </ScrollPane>
+            <ScrollPane prefHeight="99.0" prefWidth="389.0">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="99.0" prefWidth="356.0">
+                     <children>
+                        <HBox fx:id="gamesHBox" prefHeight="83.0" prefWidth="343.0" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </ScrollPane>
+            <ScrollPane prefHeight="99.0" prefWidth="389.0">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="99.0" prefWidth="355.0">
+                     <children>
+                        <HBox fx:id="audiobooksHBox" prefHeight="83.0" prefWidth="342.0" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </ScrollPane>
          </children>
-      </GridPane>
-      <Button fx:id="exitButton" layoutX="531.0" layoutY="14.0" mnemonicParsing="false" onAction="#exit" prefHeight="26.0" prefWidth="53.0" text="exit" />
+      </VBox>
+      <TabPane layoutX="404.0" layoutY="34.0" prefHeight="339.0" prefWidth="339.0" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab text="Book">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TextField fx:id="bookTitle" layoutX="124.0" layoutY="22.0" prefHeight="26.0" prefWidth="209.0" />
+                        <Button fx:id="bookButton" layoutX="206.0" layoutY="265.0" mnemonicParsing="false" onAction="#AddBook" prefHeight="26.0" prefWidth="113.0" text="Create Book" />
+                        <TextField fx:id="bookAuthor" layoutX="125.0" layoutY="61.0" prefHeight="26.0" prefWidth="208.0" />
+                        <TextField fx:id="bookNumPages" layoutX="125.0" layoutY="142.0" prefHeight="26.0" prefWidth="203.0" />
+                        <TextField fx:id="bookDescription" layoutX="125.0" layoutY="102.0" prefHeight="26.0" prefWidth="203.0" />
+                        <TextField fx:id="bookNumCopies" layoutX="125.0" layoutY="180.0" prefHeight="26.0" prefWidth="204.0" />
+                        <Label layoutX="11.0" layoutY="26.0" prefHeight="19.0" prefWidth="32.0" text="Title" />
+                        <Label layoutX="13.0" layoutY="109.0" text="Description" />
+                        <Label layoutX="12.0" layoutY="65.0" text="Author" />
+                        <Label layoutX="13.0" layoutY="146.0" text="Number of Pages" />
+                        <Label layoutX="9.0" layoutY="184.0" text="Number of Copies" />
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+            <Tab text="Movie">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TextField fx:id="movieTitle" layoutX="124.0" layoutY="22.0" prefHeight="26.0" prefWidth="209.0" />
+                        <Button fx:id="movieButton" layoutX="206.0" layoutY="265.0" mnemonicParsing="false" onAction="#AddMovie" prefHeight="26.0" prefWidth="113.0" text="Create Movie" />
+                        <TextField fx:id="movieDirector" layoutX="125.0" layoutY="61.0" prefHeight="26.0" prefWidth="208.0" />
+                        <TextField fx:id="movieRuntime" layoutX="125.0" layoutY="142.0" prefHeight="26.0" prefWidth="203.0" />
+                        <TextField fx:id="movieDescription" layoutX="125.0" layoutY="102.0" prefHeight="26.0" prefWidth="203.0" />
+                        <TextField fx:id="movieNumCopies" layoutX="125.0" layoutY="180.0" prefHeight="26.0" prefWidth="204.0" />
+                        <Label layoutX="11.0" layoutY="26.0" prefHeight="19.0" prefWidth="32.0" text="Title" />
+                        <Label layoutX="13.0" layoutY="109.0" text="Description" />
+                        <Label layoutX="12.0" layoutY="65.0" text="Director" />
+                        <Label layoutX="13.0" layoutY="146.0" text="Runtime" />
+                        <Label layoutX="9.0" layoutY="184.0" text="Number of Copies" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab text="Game">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TextField fx:id="gameTitle" layoutX="124.0" layoutY="22.0" prefHeight="26.0" prefWidth="209.0" />
+                        <Button fx:id="gameButton" layoutX="206.0" layoutY="265.0" mnemonicParsing="false" onAction="#AddGame" prefHeight="26.0" prefWidth="113.0" text="Create Game" />
+                        <TextField fx:id="gameDeveloper" layoutX="125.0" layoutY="61.0" prefHeight="26.0" prefWidth="208.0" />
+                        <TextField fx:id="gameNumCopies" layoutX="125.0" layoutY="142.0" prefHeight="26.0" prefWidth="203.0" />
+                        <TextField fx:id="gameDescription" layoutX="125.0" layoutY="102.0" prefHeight="26.0" prefWidth="203.0" />
+                        <Label layoutX="11.0" layoutY="26.0" prefHeight="19.0" prefWidth="32.0" text="Title" />
+                        <Label layoutX="13.0" layoutY="109.0" text="Description" />
+                        <Label layoutX="12.0" layoutY="65.0" text="Developer" />
+                        <Label layoutX="13.0" layoutY="146.0" text="Number of Copies" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab text="Audiobook">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TextField fx:id="audiobookTitle" layoutX="124.0" layoutY="22.0" prefHeight="26.0" prefWidth="209.0" />
+                        <Button fx:id="audiobookButton" layoutX="203.0" layoutY="265.0" mnemonicParsing="false" onAction="#AddAudiobook" prefHeight="26.0" prefWidth="116.0" text="Create Audiobook" />
+                        <TextField fx:id="audiobookNarrator" layoutX="125.0" layoutY="61.0" prefHeight="26.0" prefWidth="208.0" />
+                        <TextField fx:id="audiobookNumCopies" layoutX="125.0" layoutY="142.0" prefHeight="26.0" prefWidth="203.0" />
+                        <TextField fx:id="audiobookDescription" layoutX="125.0" layoutY="102.0" prefHeight="26.0" prefWidth="203.0" />
+                        <Label layoutX="11.0" layoutY="26.0" prefHeight="19.0" prefWidth="32.0" text="Title" />
+                        <Label layoutX="13.0" layoutY="109.0" text="Description" />
+                        <Label layoutX="12.0" layoutY="65.0" text="Narrator" />
+                        <Label layoutX="13.0" layoutY="146.0" text="Number of Copies" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+        </tabs>
+      </TabPane>
    </children>
 </Pane>

@@ -170,6 +170,7 @@ public class Server {
             if ((objectReceived).numCopies > 0) {
 
                 inventory.updateItem(objectReceived);
+                System.out.println("server num copies greater than 0");
 
                 sendToAllClients( inventory.inventoryLists.get(itemType).get(( objectReceived).title) , objectOutputStream);
             } else {

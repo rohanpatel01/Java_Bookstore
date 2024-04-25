@@ -8,6 +8,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -35,9 +36,49 @@ public class AdminLibraryController {
     Button gameButton;
     @FXML
     Button audiobookButton;
-
     @FXML
     Button exitButton;
+
+    @FXML
+    TextField bookTitle;
+    @FXML
+    TextField bookAuthor;
+    @FXML
+    TextField bookDescription;
+    @FXML
+    TextField bookNumPages;
+    @FXML
+    TextField bookNumCopies;
+
+    @FXML
+    TextField movieTitle;
+    @FXML
+    TextField movieDirector;
+    @FXML
+    TextField movieDescription;
+    @FXML
+    TextField movieRuntime;
+    @FXML
+    TextField movieNumCopies;
+
+    @FXML
+    TextField gameTitle;
+    @FXML
+    TextField gameDeveloper;
+    @FXML
+    TextField gameDescription;
+    @FXML
+    TextField gameNumCopies;
+
+
+    @FXML
+    TextField audiobookTitle;
+    @FXML
+    TextField audiobookNarrator;
+    @FXML
+    TextField audiobookDescription;
+    @FXML
+    TextField audiobookNumCopies;
 
     public AdminLibraryController() {
         client = new Client();
@@ -88,7 +129,7 @@ public class AdminLibraryController {
 
     public void AddBook() {
         System.out.println("book selected");
-        Book item = new Book("Glass Castle", "good book", "J. Walls", 288, 1);
+        Book item = new Book(bookTitle.getText(), bookDescription.getText(), bookAuthor.getText(), Integer.parseInt(bookNumPages.getText()), Integer.parseInt(bookNumCopies.getText()) );
         try {
             objectOutputStream.writeObject(item);
             objectOutputStream.flush();
