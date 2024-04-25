@@ -102,7 +102,10 @@ public class MemberLibraryController {
                             for (Node node : itemHbox.getChildren()) {
                                 if (node.getId() != null && node.getId().equals(( objectRecievedFromServer).title)) {
                                     Platform.runLater(() -> {
-                                        itemHbox.getChildren().remove(node);
+                                        String newButtonName = (( objectRecievedFromServer).title) +(( objectRecievedFromServer).numCopies)  + "";
+                                        ((Button) node.lookup(".button")).setText(newButtonName);
+                                        node.setDisable(true);
+//                                        itemHbox.getChildren().remove(node);
                                     });
                                 }
                             }
@@ -116,6 +119,7 @@ public class MemberLibraryController {
                                     Platform.runLater(() -> {
                                         String newButtonName = (( objectRecievedFromServer).title) +(( objectRecievedFromServer).numCopies)  + "";
                                         ((Button) node.lookup(".button")).setText(newButtonName);
+                                        node.setDisable(false);
                                     });
                                 }
                             }
