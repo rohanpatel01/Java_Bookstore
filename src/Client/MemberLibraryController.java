@@ -67,6 +67,9 @@ public class MemberLibraryController {
         inventory = new Inventory();
         cart = new Cart();
 
+        // populate item with cart
+
+
         try {
             objectOutputStream = new ObjectOutputStream(client.clientSocket.getOutputStream());
             objectInputStream = new ObjectInputStream(client.clientSocket.getInputStream());
@@ -98,46 +101,79 @@ public class MemberLibraryController {
                        inventory.inventoryLists.get(itemIndex).put(( objectRecievedFromServer).title, objectRecievedFromServer);
                        inventory.printInventory();
                        cart.printCart();
-                       if ( inventory.inventoryLists.get(itemIndex).get(( objectRecievedFromServer).title).numCopies <= 0) { //((Book) objectRecievedFromServer).numCopies
-                            for (Node node : itemHbox.getChildren()) {
-                                if (node.getId() != null && node.getId().equals(( objectRecievedFromServer).title)) {
-                                    Platform.runLater(() -> {
-                                        String newButtonName = (( objectRecievedFromServer).title) +(( objectRecievedFromServer).numCopies)  + "";
-                                        ((Button) node.lookup(".button")).setText(newButtonName);
-                                        node.setDisable(true);
-//                                        itemHbox.getChildren().remove(node);
-                                    });
-                                }
-                            }
-                       } else {
-//
-                           boolean isCardPresent = false;
 
-                            for (Node node : itemHbox.getChildren()) {
-                                if (node.getId() != null && node.getId().equals( objectRecievedFromServer.title)) {
-                                   isCardPresent = true;
-                                    Platform.runLater(() -> {
-                                        String newButtonName = (( objectRecievedFromServer).title) +(( objectRecievedFromServer).numCopies)  + "";
-                                        ((Button) node.lookup(".button")).setText(newButtonName);
-                                        node.setDisable(false);
-                                    });
-                                }
-                            }
+                       // handle card creation and modification
+                       int currentItemCount = inventory.inventoryLists.get(itemIndex).get(( objectRecievedFromServer).title).numCopies;
+                       if (currentItemCount == 0) {
+                           boolean foundCard = false;
+                           for (Node node : itemHbox.getChildren()) {
+                               if (node.getId() != null && node.getId().equals(( objectRecievedFromServer).title)) {
+                                   foundCard = true;
+                                   // found card - means card was checked out and thus needs to decrease in count and disable button
+                                   Platform.runLater(() -> {
+                                       String newButtonName = (( objectRecievedFromServer).title) + ((objectRecievedFromServer).numCopies)  + "";
+                                       ((Button) node.lookup(".button")).setText(newButtonName);
+                                      node.setDisable(true);
+                                   });
+                               }
+                           }
+                           // card does not exist - means loaded into from inventory and need to create card for it
+                           if (!foundCard) {
+                               HBox createdBookCard = new HBox();
+                               createdBookCard.setId(( objectRecievedFromServer).title);
+                               Button checkoutButton = new Button( ( objectRecievedFromServer).title + ( objectRecievedFromServer).numCopies );
+                               checkoutButton.setUserData(itemIndex);
+                               // give the button some user data so we can tell later what type of object the button corresponds to
+                               checkoutButton.setOnAction(event -> itemSelected(event));  // , (Book) objectRecievedFromServer)
 
-                            if (!isCardPresent) {
-                                HBox createdBookCard = new HBox();
-                                createdBookCard.setId(( objectRecievedFromServer).title);
-                                Button checkoutButton = new Button( ( objectRecievedFromServer).title + ( objectRecievedFromServer).numCopies );
-                                checkoutButton.setUserData(itemIndex);
-                                // give the button some user data so we can tell later what type of object the button corresponds to
-                                checkoutButton.setOnAction(event -> itemSelected(event));  // , (Book) objectRecievedFromServer)
-                                Platform.runLater(() -> {
-                                    createdBookCard.getChildren().add(checkoutButton);
-                                    itemHbox.getChildren().add(createdBookCard);
-                                });
-                            }
+                               if (objectRecievedFromServer.numCopies == 0) {
+                                   checkoutButton.setDisable(true);
+                               }
 
-                        }
+                               Platform.runLater(() -> {
+                                   createdBookCard.getChildren().add(checkoutButton);
+                                   itemHbox.getChildren().add(createdBookCard);
+                               });
+                           }
+
+                       } else { // item is greater or less than 0 - just update the count and update
+
+
+                           // if already there update, else create
+                           boolean foundCard = false;
+                           for (Node node : itemHbox.getChildren()) {
+                               if (node.getId() != null && node.getId().equals(( objectRecievedFromServer).title)) {
+                                   foundCard = true;
+                                   Platform.runLater(() -> {
+                                       String newButtonName = (( objectRecievedFromServer).title) +(( objectRecievedFromServer).numCopies)  + "";
+                                       ((Button) node.lookup(".button")).setText(newButtonName);
+                                       node.setDisable(false); // shouldn't need this
+                                   });
+                               }
+                           }
+                           // adding new item that was not in inventory before - create card
+                           if (!foundCard) {
+                               HBox createdBookCard = new HBox();
+                               createdBookCard.setId(( objectRecievedFromServer).title);
+                               Button checkoutButton = new Button( ( objectRecievedFromServer).title + ( objectRecievedFromServer).numCopies );
+                               checkoutButton.setUserData(itemIndex);
+                               // give the button some user data so we can tell later what type of object the button corresponds to
+                               checkoutButton.setOnAction(event -> itemSelected(event));  // , (Book) objectRecievedFromServer)
+
+                               // shouldn't be the case
+//                               if (objectRecievedFromServer.numCopies == 0) {
+//                                   checkoutButton.setDisable(false);
+//                               }
+
+                               Platform.runLater(() -> {
+                                   createdBookCard.getChildren().add(checkoutButton);
+                                   itemHbox.getChildren().add(createdBookCard);
+                               });
+                           }
+
+
+                       }
+
                    }
 
                }  catch (IOException| ClassNotFoundException  exception) {exception.printStackTrace(); }

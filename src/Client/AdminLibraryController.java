@@ -98,7 +98,8 @@ public class AdminLibraryController {
             try {
                 while (true) {
                     if ((objectRecievedFromServer = (objectInputStream.readObject())) != null ) {
-                        inventory.bookList.put(((Book) objectRecievedFromServer).title, (Book) objectRecievedFromServer);
+                        // TODO: make sure admin can populate inventory on start
+//                        inventory.bookList.put(((Book) objectRecievedFromServer).title, (Book) objectRecievedFromServer);
                         inventory.printInventory();
 
                     }
