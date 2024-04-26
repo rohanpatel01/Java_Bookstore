@@ -165,7 +165,8 @@ public class LoginController {
 
                                 // get the user for the member
                                 MemberLibraryController memberLibraryController = loader.getController();
-                                memberLibraryController.setUser(user);
+//                                memberLibraryController.setUser(user);
+                                memberLibraryController.setUser(recievedUser);
                                 System.out.println("login controller found user cart items: " + recievedUser);
 
 
