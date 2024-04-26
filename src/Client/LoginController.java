@@ -1,7 +1,6 @@
 package Client;
 
 import Shared.*;
-import com.mongodb.client.MongoCursor;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -40,8 +39,8 @@ public class LoginController {
     ObjectOutputStream objectOutputStream;
     ObjectInputStream objectInputStream;
     Object objectRecieved;
-//    Boolean mongoBoolean = new Boolean(false);
-    User foundUser; // default value for user that is invalid
+    User user;
+    User recievedUser; // default value for user that is invalid
     private boolean mongoCommFlag = false;
     private final Object lock = new Object();
 
@@ -65,13 +64,11 @@ public class LoginController {
     @FXML
     Button exitButton;
 
-    User user = new User();
 
     public void initialize() {
         System.out.println("stage: " + stage);
         System.out.println("scene: " + scene);
         System.out.println("root: " + root);
-//        stage = (Stage) exitButton.getScene().getWindow();
     }
     public LoginController() {
         client = new Client();
@@ -97,16 +94,12 @@ public class LoginController {
                 try {
                     if ((objectRecieved = objectInputStream.readObject()) != null) {
                         if (objectRecieved instanceof User) {
-//                            System.out.println("woohoo");
                             synchronized (lock) {
-//                                System.out.println(((Boolean) objectRecieved).booleanValue());
-//                                mongoBoolean = new Boolean(((Boolean) objectRecieved).booleanValue());
-                                foundUser = (User) objectRecieved;
+                                recievedUser = (User) objectRecieved;
                                 System.out.println("object recieved: " + (User) objectRecieved);
-                                System.out.println("recieved user value: " + foundUser);
+                                System.out.println("recieved user value: " + recievedUser);
                                 mongoCommFlag  = true;
                                 lock.notifyAll();
-//                                System.out.println("notify all");
 
                             }
                         }
@@ -155,10 +148,10 @@ public class LoginController {
                     mongoCommFlag = false; // reset flag
 
                     // true here meaning user is in the database and thus can login
-                    System.out.println("Found user: " + foundUser);
+                    System.out.println("Found user: " + recievedUser);
                     System.out.println("expected login username: " + username);
-                    if (foundUser.username.equals(username)) {
-                        if (foundUser.isAdmin) { // admin login
+                    if (recievedUser.username.equals(username)) {
+                        if (recievedUser.isAdmin) { // admin login
 
                             try {
                                 root = FXMLLoader.load(getClass().getResource("AdminLibrary.fxml"));
@@ -172,24 +165,20 @@ public class LoginController {
 
                                 // get the user for the member
                                 MemberLibraryController memberLibraryController = loader.getController();
-                                memberLibraryController.setUser(foundUser);
+                                memberLibraryController.setUser(user);
+                                System.out.println("login controller found user cart items: " + recievedUser);
 
 
                             } catch (IOException ioException) { ioException.printStackTrace(); }
                         }
-                        // to pass user into member library controller
-//                        stage.setUserData(new User(username, password, foundUser.isAdmin));
 
                         // load user
                         Platform.runLater(() -> {
                                 stage = (Stage)((Node) event.getSource()).getScene().getWindow();
                                 scene = new Scene(root);
                                 stage.setScene(scene);
-//                                stage.setUserData(user);
-//                                System.out.println("stage user data: " + stage.getUserData());
-                            root.setUserData(5);
-                                currentUser = foundUser;
                                 stage.show();
+                            System.out.println("show new stage");
 
                         });
 
@@ -201,24 +190,6 @@ public class LoginController {
             });
             t.start();
 
-
-
-
-
-
-
-
-
-//            try (MongoCursor<User> cursor = MongoDBManager.userCollection.find().iterator()) {
-//                while (cursor.hasNext()) {
-//                    User currentUser = cursor.next();
-//                    if (currentUser.username.equals(username) && currentUser.password.equals(password)) {
-//
-//                    } else {
-//                        System.out.println("ERROR: wrong username or password. please try again");
-//                    }
-//                }
-//            }
         }
     }
 
@@ -232,6 +203,7 @@ public class LoginController {
         if (!(username.isEmpty()) || password.isEmpty()) {
 
             User sendUser = new User(username, password, false);
+            sendUser.isSignup = true;
 
             try {
                 objectOutputStream.writeObject(sendUser);
@@ -258,13 +230,13 @@ public class LoginController {
                     System.out.println("got to sign in");
 
                     // invalid here meaning that the user has not already created account and we can do so
-                    if (foundUser.username.equals("invalid")) {
+                    if (recievedUser.username.equals("invalid")) {
+                        // TODO: should not be adding to mongo here, rather just make the user so when we login we have it
                         if (isAdmin) {
                             user = new User(username, password, true);
                         } else {
                             user = new User(username, password, false);
                         }
-                        MongoDBManager.userCollection.insertOne(user);
 
                     } else {
                         System.out.println("client already created account");

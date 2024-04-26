@@ -152,7 +152,11 @@ public class Server {
                             } else if (objectRecieved instanceof User){
                                 // check if user is in mongoDB
                                 boolean found = false;
+
                                 try (MongoCursor<User> cursor = MongoDBManager.userCollection.find().iterator()) {
+                                    // TODO: need to know when to add user to mongoDB
+                                    // check for isSignup and see if is true then add to mongo,
+                                    // else if false (login) - dont do anything - do normal
                                     while (cursor.hasNext()) {
                                         User currentUser = cursor.next();
                                         if (currentUser.username.equals(((User)objectRecieved).username)) {
@@ -167,6 +171,9 @@ public class Server {
                                 }
 
                                 if (!found) {
+                                    if (((User) objectRecieved).isSignup) {
+                                        MongoDBManager.userCollection.insertOne( (User) objectRecieved);
+                                    }
                                     System.out.println("not found");
                                     objectOutputStream.reset();
                                     objectOutputStream.writeObject(new User("invalid", "invalid", false)); // will be used to indicate user is not in database
