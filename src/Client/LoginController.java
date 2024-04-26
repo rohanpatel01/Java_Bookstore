@@ -35,8 +35,9 @@ public class LoginController {
     ObjectOutputStream objectOutputStream;
     ObjectInputStream objectInputStream;
     Object objectRecieved;
-    Boolean mongoBoolean = new Boolean(false);
-    private boolean mongoBooleanSet = false;
+//    Boolean mongoBoolean = new Boolean(false);
+    User foundUser;
+    private boolean mongoCommFlag = false;
     private final Object lock = new Object();
 
 
@@ -83,14 +84,14 @@ public class LoginController {
             while (true) {
                 try {
                     if ((objectRecieved = objectInputStream.readObject()) != null) {
-                        if (objectRecieved instanceof Boolean) {
+                        if (objectRecieved instanceof User) {
 //                            System.out.println("woohoo");
                             synchronized (lock) {
 //                                System.out.println(((Boolean) objectRecieved).booleanValue());
 //                                mongoBoolean = new Boolean(((Boolean) objectRecieved).booleanValue());
-                                mongoBoolean = (Boolean) objectRecieved;
-                                System.out.println("recieved boolean value: " + (Boolean) objectRecieved);
-                                mongoBooleanSet = true;
+                                foundUser = (User) objectRecieved;
+                                System.out.println("recieved user value: " + (User) objectRecieved);
+                                mongoCommFlag  = true;
                                 lock.notifyAll();
 //                                System.out.println("notify all");
 
@@ -117,37 +118,68 @@ public class LoginController {
 
         if (!(username.isEmpty() || password.isEmpty())) {
 
-            try (MongoCursor<User> cursor = MongoDBManager.userCollection.find().iterator()) {
-                while (cursor.hasNext()) {
-                    User currentUser = cursor.next();
-                    if (currentUser.username.equals(username) && currentUser.password.equals(password)) {
 
-                       if (currentUser.isAdmin) { // admin login
+            User sendUser = new User(username, password, false);
 
-                           try {
-                               root = FXMLLoader.load(getClass().getResource("AdminLibrary.fxml"));
-                           } catch (IOException ioException) { ioException.printStackTrace(); }
+            try {
+                objectOutputStream.writeObject(sendUser);
+                objectOutputStream.flush();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
-                       } else { // member login
-
-                           try {
-                               root = FXMLLoader.load(getClass().getResource("MemberLibrary.fxml"));
-                           } catch (IOException ioException) { ioException.printStackTrace(); }
-                       }
-
-                        // load user
-                        stage = (Stage)((Node) event.getSource()).getScene().getWindow();
-                        scene = new Scene(root);
-                        stage.setScene(scene);
-                        scene.setUserData(user);
-                        stage.show();
-
-
-                    } else {
-                        System.out.println("ERROR: wrong username or password. please try again");
+            Thread t = new Thread(() -> {
+                synchronized (lock) {
+                    while (!mongoCommFlag ) {
+                        try {
+                            lock.wait();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
-            }
+            });
+            t.start();
+
+            // true here meaning user is in the database and thus can login
+//            if (mongoBoolean.booleanValue() == true) {
+//                if (currentUser.isAdmin) { // admin login
+//
+//                    try {
+//                        root = FXMLLoader.load(getClass().getResource("AdminLibrary.fxml"));
+//                    } catch (IOException ioException) { ioException.printStackTrace(); }
+//
+//                } else { // member login
+//
+//                    try {
+//                        root = FXMLLoader.load(getClass().getResource("MemberLibrary.fxml"));
+//                    } catch (IOException ioException) { ioException.printStackTrace(); }
+//                }
+//
+//                // load user
+//                stage = (Stage)((Node) event.getSource()).getScene().getWindow();
+//                scene = new Scene(root);
+//                stage.setScene(scene);
+//                scene.setUserData(user);
+//                stage.show();
+//
+//            } else if (mongoBoolean.booleanValue() == false) {
+//                System.out.println("ERROR: Invalid username or password");
+//            }
+
+
+
+
+//            try (MongoCursor<User> cursor = MongoDBManager.userCollection.find().iterator()) {
+//                while (cursor.hasNext()) {
+//                    User currentUser = cursor.next();
+//                    if (currentUser.username.equals(username) && currentUser.password.equals(password)) {
+//
+//                    } else {
+//                        System.out.println("ERROR: wrong username or password. please try again");
+//                    }
+//                }
+//            }
         }
     }
 
@@ -172,7 +204,7 @@ public class LoginController {
 
             Thread t = new Thread(() -> {
                 synchronized (lock) {
-                    while(!mongoBooleanSet) {
+                    while(!mongoCommFlag ) {
                         try {
                             // Wait until mongoBoolean is set
                             lock.wait();
@@ -181,10 +213,13 @@ public class LoginController {
                         }
                     }
 
+                    mongoCommFlag  = false; // reset back to false
 
                     // worked - only add to mongo if not in there
-                    System.out.println("mongoboolean value: " +mongoBoolean.booleanValue() );
-                    if (mongoBoolean.booleanValue() == false) {
+                    System.out.println("got to sign in");
+
+                    // false here meaning that the user has not already created account and we can do so
+                    if (foundUser.username.equals("invalid")) {
                         if (isAdmin) {
                             user = new User(username, password, true);
                         } else {
@@ -192,8 +227,7 @@ public class LoginController {
                         }
                         MongoDBManager.userCollection.insertOne(user);
 
-                        mongoBooleanSet = false; // reset back to false
-                    } else if (mongoBoolean.booleanValue() == true){
+                    } else {
                         System.out.println("client already created account");
                     }
 

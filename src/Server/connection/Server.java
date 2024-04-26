@@ -158,7 +158,7 @@ public class Server {
                                         if (currentUser.username.equals(((User)objectRecieved).username)) {
                                             System.out.println("server got username: " + ((User) objectRecieved).username);
                                             objectOutputStream.reset();
-                                            objectOutputStream.writeObject(new Boolean(true));
+                                            objectOutputStream.writeObject(currentUser);
                                             objectOutputStream.flush();
                                             found = true;
                                         }
@@ -168,7 +168,7 @@ public class Server {
                                 if (!found) {
                                     System.out.println("not found");
                                     objectOutputStream.reset();
-                                    objectOutputStream.writeObject(new Boolean(false));
+                                    objectOutputStream.writeObject(new User("invalid", "invalid", false)); // will be used to indicate user is not in database
                                     objectOutputStream.flush();
                                 }
 
