@@ -15,7 +15,7 @@ public class Game extends LibraryItem implements Serializable {
 
     @Override
     public String toString() {
-        return (  itemType + " : " + title + " : " + summaryDescription);
+        return ( "num copies: " + numCopies + "item type: " +  itemType + " : " + title + " : " + summaryDescription);
     }
 
 }

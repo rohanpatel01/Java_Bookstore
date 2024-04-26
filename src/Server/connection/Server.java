@@ -154,7 +154,9 @@ public class Server {
                                 // check if user is in mongoDB
                                 boolean found = false;
                                 System.out.println("user recieved: " + ((User) objectRecieved));
+                                ((User) objectRecieved).printCart();
 
+                                // TODO:
                                 try (MongoCursor<User> cursor = MongoDBManager.userCollection.find().iterator()) {
                                     // TODO: need to know when to add user to mongoDB
                                     // check for isSignup and see if is true then add to mongo,
