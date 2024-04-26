@@ -144,10 +144,35 @@ public class Server {
             Thread objectReaderThread = new Thread(() -> {
                 try {
                     while (true) { // should have a while true to recieve objects?
-                        if ((objectRecieved = (LibraryItem) objectInputStream.readObject()) != null) {
-                            System.out.println("server recieved object: " + objectRecieved);
-                            handleObject( (LibraryItem) objectRecieved, objectOutputStream);
-                            inventory.printInventory();
+                        if ((objectRecieved = objectInputStream.readObject()) != null) {
+                            if (objectRecieved instanceof LibraryItem) {
+                                System.out.println("server recieved object: " + objectRecieved);
+                                handleObject( (LibraryItem) objectRecieved, objectOutputStream);
+                                inventory.printInventory();
+                            } else if (objectRecieved instanceof User){
+                                // check if user is in mongoDB
+                                boolean found = false;
+                                try (MongoCursor<User> cursor = MongoDBManager.userCollection.find().iterator()) {
+                                    while (cursor.hasNext()) {
+                                        User currentUser = cursor.next();
+                                        if (currentUser.username.equals(((User)objectRecieved).username)) {
+                                            System.out.println("server got username: " + ((User) objectRecieved).username);
+                                            objectOutputStream.reset();
+                                            objectOutputStream.writeObject(new Boolean(true));
+                                            objectOutputStream.flush();
+                                            found = true;
+                                        }
+                                    }
+                                }
+
+                                if (!found) {
+                                    System.out.println("not found");
+                                    objectOutputStream.reset();
+                                    objectOutputStream.writeObject(new Boolean(false));
+                                    objectOutputStream.flush();
+                                }
+
+                            }
 
                         }
                     }

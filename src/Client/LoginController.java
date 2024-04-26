@@ -18,6 +18,8 @@ import javafx.scene.control.TitledPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,6 +29,11 @@ public class LoginController {
     private Scene scene;
     private Parent root;
     private boolean isAdmin = false;
+
+    Client client;
+    ObjectOutputStream objectOutputStream;
+    ObjectInputStream objectInputStream;
+    Object objectRecieved;
 
     @FXML
     TitledPane titledPane;
@@ -49,9 +56,41 @@ public class LoginController {
     User user = new User();
 
     public LoginController() {
+        client = new Client();
+        client.setupNetworking();
 
+        try {
+            objectOutputStream = new ObjectOutputStream(client.clientSocket.getOutputStream());
+            objectInputStream = new ObjectInputStream(client.clientSocket.getInputStream());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        Thread t = new Thread(new ObjectReader()); //, objectOutputStream
+        t.start();
 
     }
+
+   class ObjectReader implements Runnable {
+
+        public void run() {
+            while (true) {
+                try {
+                    if ((objectRecieved = objectInputStream.readObject()) != null) {
+                        if (objectRecieved instanceof Boolean) {
+                            System.out.println("woohoo");
+                            System.out.println(((Boolean) objectRecieved).booleanValue());
+                        }
+                    }
+
+                } catch (IOException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+   }
+
 
     @FXML
     public void loginButton(ActionEvent event) {
@@ -106,24 +145,37 @@ public class LoginController {
 
         if (!(username.isEmpty()) || password.isEmpty()) {
 
-            try (MongoCursor<User> cursor = MongoDBManager.userCollection.find().iterator()) {
-                while (cursor.hasNext()) {
-                    User currentUser = cursor.next();
-                    if (currentUser.username.equals(username)) {
-                        System.out.println("ERROR: User already signed up");
-                        return;
-                    }
-                }
+            User sendUser = new User(username, password, false);
+
+            try {
+                objectOutputStream.writeObject(sendUser);
+                objectOutputStream.flush();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
 
-            if (isAdmin) {
-//                adminCredentials.put(username, password);
-                user = new User(username, password, true);
-            } else {
-//                memberCredentials.put(username, password);
-                user = new User(username, password, false);
-            }
-            MongoDBManager.userCollection.insertOne(user);
+            System.out.println("send user");
+
+
+
+//            try (MongoCursor<User> cursor = MongoDBManager.userCollection.find().iterator()) {
+//                while (cursor.hasNext()) {
+//                    User currentUser = cursor.next();
+//                    if (currentUser.username.equals(username)) {
+//                        System.out.println("ERROR: User already signed up");
+//                        return;
+//                    }
+//                }
+//            }
+
+//            if (isAdmin) {
+////                adminCredentials.put(username, password);
+//                user = new User(username, password, true);
+//            } else {
+////                memberCredentials.put(username, password);
+//                user = new User(username, password, false);
+//            }
+//            MongoDBManager.userCollection.insertOne(user);
         }
 
     }
