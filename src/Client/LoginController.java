@@ -34,6 +34,7 @@ public class LoginController {
     ObjectOutputStream objectOutputStream;
     ObjectInputStream objectInputStream;
     Object objectRecieved;
+    Boolean mongoBoolean = null;
 
     @FXML
     TitledPane titledPane;
@@ -79,8 +80,9 @@ public class LoginController {
                 try {
                     if ((objectRecieved = objectInputStream.readObject()) != null) {
                         if (objectRecieved instanceof Boolean) {
-                            System.out.println("woohoo");
+//                            System.out.println("woohoo");
                             System.out.println(((Boolean) objectRecieved).booleanValue());
+                            mongoBoolean = new Boolean(((Boolean) objectRecieved).booleanValue());
                         }
                     }
 
@@ -139,6 +141,7 @@ public class LoginController {
 
     @FXML
     public void signupButton() {
+
         String username = createUser.getText();
         String password = createPassword.getText();
 
@@ -156,6 +159,11 @@ public class LoginController {
 
             System.out.println("send user");
 
+            Thread t = new Thread(() -> {
+                while(mongoBoolean == null) { }
+                System.out.println("omgggggggggg");
+            });
+            t.start();
 
 
 //            try (MongoCursor<User> cursor = MongoDBManager.userCollection.find().iterator()) {
