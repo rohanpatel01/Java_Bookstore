@@ -1,5 +1,7 @@
 package Shared;
 
+import org.bson.codecs.pojo.annotations.BsonProperty;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +11,11 @@ public class User implements Serializable {
     public String username;
     public String password;
     public boolean isAdmin;
+
+    // dont know if need
+    @BsonProperty(value = "cartItems")
     public Map<String, LibraryItem> cartItems;
+
     public boolean isSignup;
 
     public User() {}

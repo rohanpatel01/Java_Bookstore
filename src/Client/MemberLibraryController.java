@@ -98,90 +98,93 @@ public class MemberLibraryController {
                    // allow for all types of items
                    // based on what type of item - have method to determine type then make index correct one for inventory big
                     // need to change what hbox we target based on what type of item it is
+                    // TODO: dont cast to library item here
 
                    if ((objectRecievedFromServer = (LibraryItem) objectInputStream.readObject()) != null) {
+                        if (objectRecievedFromServer instanceof LibraryItem) {
 
-                       System.out.println("recieved library item");
-                       int itemIndex = inventory.determineItemType(objectRecievedFromServer);
-                       HBox itemHbox = determineItemHbox(objectRecievedFromServer);
+                            System.out.println("recieved library item");
+                            int itemIndex = inventory.determineItemType(objectRecievedFromServer);
+                            HBox itemHbox = determineItemHbox(objectRecievedFromServer);
 
-                       inventory.inventoryLists.get(itemIndex).put(( objectRecievedFromServer).title, objectRecievedFromServer);
-                       inventory.printInventory();
+                            inventory.inventoryLists.get(itemIndex).put(( objectRecievedFromServer).title, objectRecievedFromServer);
+                            inventory.printInventory();
 //                       currentUser.printCart();
 
-                       // handle card creation and modification
-                       int currentItemCount = inventory.inventoryLists.get(itemIndex).get(( objectRecievedFromServer).title).numCopies;
-                       if (currentItemCount == 0) {
-                           boolean foundCard = false;
-                           for (Node node : itemHbox.getChildren()) {
-                               if (node.getId() != null && node.getId().equals(( objectRecievedFromServer).title)) {
-                                   foundCard = true;
-                                   // found card - means card was checked out and thus needs to decrease in count and disable button
-                                   Platform.runLater(() -> {
-                                       String newButtonName = (( objectRecievedFromServer).title) + ((objectRecievedFromServer).numCopies)  + "";
-                                       ((Button) node.lookup(".button")).setText(newButtonName);
-                                      node.setDisable(true);
-                                   });
-                               }
-                           }
-                           // card does not exist - means loaded into from inventory and need to create card for it
-                           if (!foundCard) {
-                               System.out.println("create card");
-                               HBox createdBookCard = new HBox();
-                               createdBookCard.setId(( objectRecievedFromServer).title);
-                               Button checkoutButton = new Button( ( objectRecievedFromServer).title + ( objectRecievedFromServer).numCopies );
-                               checkoutButton.setUserData(itemIndex);
-                               // give the button some user data so we can tell later what type of object the button corresponds to
-                               checkoutButton.setOnAction(event -> itemSelected(event));  // , (Book) objectRecievedFromServer)
+                            // handle card creation and modification
+                            int currentItemCount = inventory.inventoryLists.get(itemIndex).get(( objectRecievedFromServer).title).numCopies;
+                            if (currentItemCount == 0) {
+                                boolean foundCard = false;
+                                for (Node node : itemHbox.getChildren()) {
+                                    if (node.getId() != null && node.getId().equals(( objectRecievedFromServer).title)) {
+                                        foundCard = true;
+                                        // found card - means card was checked out and thus needs to decrease in count and disable button
+                                        Platform.runLater(() -> {
+                                            String newButtonName = (( objectRecievedFromServer).title) + ((objectRecievedFromServer).numCopies)  + "";
+                                            ((Button) node.lookup(".button")).setText(newButtonName);
+                                            node.setDisable(true);
+                                        });
+                                    }
+                                }
+                                // card does not exist - means loaded into from inventory and need to create card for it
+                                if (!foundCard) {
+                                    System.out.println("create card");
+                                    HBox createdBookCard = new HBox();
+                                    createdBookCard.setId(( objectRecievedFromServer).title);
+                                    Button checkoutButton = new Button( ( objectRecievedFromServer).title + ( objectRecievedFromServer).numCopies );
+                                    checkoutButton.setUserData(itemIndex);
+                                    // give the button some user data so we can tell later what type of object the button corresponds to
+                                    checkoutButton.setOnAction(event -> itemSelected(event));  // , (Book) objectRecievedFromServer)
 
-                               if (objectRecievedFromServer.numCopies == 0) {
-                                   checkoutButton.setDisable(true);
-                               }
+                                    if (objectRecievedFromServer.numCopies == 0) {
+                                        checkoutButton.setDisable(true);
+                                    }
 
-                               Platform.runLater(() -> {
-                                   createdBookCard.getChildren().add(checkoutButton);
-                                   itemHbox.getChildren().add(createdBookCard);
-                               });
-                           }
+                                    Platform.runLater(() -> {
+                                        createdBookCard.getChildren().add(checkoutButton);
+                                        itemHbox.getChildren().add(createdBookCard);
+                                    });
+                                }
 
-                       } else { // item is greater or less than 0 - just update the count and update
+                            } else { // item is greater or less than 0 - just update the count and update
 
 
-                           // if already there update, else create
-                           boolean foundCard = false;
-                           for (Node node : itemHbox.getChildren()) {
-                               if (node.getId() != null && node.getId().equals(( objectRecievedFromServer).title)) {
-                                   foundCard = true;
-                                   Platform.runLater(() -> {
-                                       String newButtonName = (( objectRecievedFromServer).title) +(( objectRecievedFromServer).numCopies)  + "";
-                                       ((Button) node.lookup(".button")).setText(newButtonName);
-                                       node.setDisable(false); // shouldn't need this
-                                   });
-                               }
-                           }
-                           // adding new item that was not in inventory before - create card
-                           if (!foundCard) {
-                               System.out.println("adding new item to inventory that was not created before");
-                               HBox createdBookCard = new HBox();
-                               createdBookCard.setId(( objectRecievedFromServer).title);
-                               Button checkoutButton = new Button( ( objectRecievedFromServer).title + ( objectRecievedFromServer).numCopies );
-                               checkoutButton.setUserData(itemIndex);
-                               // give the button some user data so we can tell later what type of object the button corresponds to
-                               checkoutButton.setOnAction(event -> itemSelected(event));  // , (Book) objectRecievedFromServer)
+                                // if already there update, else create
+                                boolean foundCard = false;
+                                for (Node node : itemHbox.getChildren()) {
+                                    if (node.getId() != null && node.getId().equals(( objectRecievedFromServer).title)) {
+                                        foundCard = true;
+                                        Platform.runLater(() -> {
+                                            String newButtonName = (( objectRecievedFromServer).title) +(( objectRecievedFromServer).numCopies)  + "";
+                                            ((Button) node.lookup(".button")).setText(newButtonName);
+                                            node.setDisable(false); // shouldn't need this
+                                        });
+                                    }
+                                }
+                                // adding new item that was not in inventory before - create card
+                                if (!foundCard) {
+                                    System.out.println("adding new item to inventory that was not created before");
+                                    HBox createdBookCard = new HBox();
+                                    createdBookCard.setId(( objectRecievedFromServer).title);
+                                    Button checkoutButton = new Button( ( objectRecievedFromServer).title + ( objectRecievedFromServer).numCopies );
+                                    checkoutButton.setUserData(itemIndex);
+                                    // give the button some user data so we can tell later what type of object the button corresponds to
+                                    checkoutButton.setOnAction(event -> itemSelected(event));  // , (Book) objectRecievedFromServer)
 
-                               // shouldn't be the case
+                                    // shouldn't be the case
 //                               if (objectRecievedFromServer.numCopies == 0) {
 //                                   checkoutButton.setDisable(false);
 //                               }
 
-                               Platform.runLater(() -> {
-                                   createdBookCard.getChildren().add(checkoutButton);
-                                   itemHbox.getChildren().add(createdBookCard);
-                               });
-                           }
+                                    Platform.runLater(() -> {
+                                        createdBookCard.getChildren().add(checkoutButton);
+                                        itemHbox.getChildren().add(createdBookCard);
+                                    });
+                                }
 
 
-                       }
+                            }
+                        }
 
                    }
 
@@ -304,10 +307,7 @@ public class MemberLibraryController {
             System.out.println("updated user after adding item to cart: " );
             currentUser.printCart();
             // todo: update user here
-           try {
-               objectOutputStream.writeObject(currentUser);
-               objectOutputStream.flush();
-           } catch (IOException ioe) {ioe.printStackTrace();}
+
 
            for (Node node : cartVBox.getChildren()) {
             if (node.getId() != null && node.getId().equals(item.title)) {
@@ -315,6 +315,12 @@ public class MemberLibraryController {
                     System.out.println("update existing card in cart");
                     String newButtonName = (item.title + " " + currentUser.cartItems.get(item.title).numCopies);
                     ((Button) node.lookup(".button")).setText(newButtonName);
+                    // TODO: try something??
+                    try {
+                        objectOutputStream.writeObject(currentUser);
+                        objectOutputStream.flush();
+                    } catch (IOException ioe) {ioe.printStackTrace();}
+
                 });
             }
         }
@@ -325,10 +331,10 @@ public class MemberLibraryController {
             currentUser.add(item);
 
             // todo: update user here
-//            try {
-//                objectOutputStream.writeObject(currentUser);
-//                objectOutputStream.flush();
-//            } catch (IOException ioe) {ioe.printStackTrace();}
+            try {
+                objectOutputStream.writeObject(currentUser);
+                objectOutputStream.flush();
+            } catch (IOException ioe) {ioe.printStackTrace();}
 
             System.out.println("create cart item");
             HBox cartCardHBox = new HBox();

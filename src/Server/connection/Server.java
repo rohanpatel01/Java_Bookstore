@@ -153,6 +153,7 @@ public class Server {
                             } else if (objectRecieved instanceof User){
                                 // check if user is in mongoDB
                                 boolean found = false;
+                                System.out.println("user recieved: " + ((User) objectRecieved));
 
                                 try (MongoCursor<User> cursor = MongoDBManager.userCollection.find().iterator()) {
                                     // TODO: need to know when to add user to mongoDB
