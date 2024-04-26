@@ -16,5 +16,9 @@ public class User implements Serializable {
         this.isAdmin = isAdmin;
     }
 
+    @Override
+    public String toString() {
+       return "{Username: " + username + " : " + "Password: " + password + "}";
+    }
 
 }

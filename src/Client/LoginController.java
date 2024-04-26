@@ -36,7 +36,7 @@ public class LoginController {
     ObjectInputStream objectInputStream;
     Object objectRecieved;
 //    Boolean mongoBoolean = new Boolean(false);
-    User foundUser;
+    User foundUser; // default value for user that is invalid
     private boolean mongoCommFlag = false;
     private final Object lock = new Object();
 
@@ -90,7 +90,8 @@ public class LoginController {
 //                                System.out.println(((Boolean) objectRecieved).booleanValue());
 //                                mongoBoolean = new Boolean(((Boolean) objectRecieved).booleanValue());
                                 foundUser = (User) objectRecieved;
-                                System.out.println("recieved user value: " + (User) objectRecieved);
+                                System.out.println("object recieved: " + (User) objectRecieved);
+                                System.out.println("recieved user value: " + foundUser);
                                 mongoCommFlag  = true;
                                 lock.notifyAll();
 //                                System.out.println("notify all");
@@ -137,35 +138,49 @@ public class LoginController {
                             e.printStackTrace();
                         }
                     }
+
+
+                    mongoCommFlag = false; // reset flag
+
+                    // true here meaning user is in the database and thus can login
+                    System.out.println("Found user: " + foundUser);
+                    System.out.println("expected login username: " + username);
+                    if (foundUser.username.equals(username)) {
+                        if (foundUser.isAdmin) { // admin login
+
+                            try {
+                                root = FXMLLoader.load(getClass().getResource("AdminLibrary.fxml"));
+                            } catch (IOException ioException) { ioException.printStackTrace(); }
+
+                        } else { // member login
+
+                            try {
+                                root = FXMLLoader.load(getClass().getResource("MemberLibrary.fxml"));
+                            } catch (IOException ioException) { ioException.printStackTrace(); }
+                        }
+
+                        // load user
+                        Platform.runLater(() -> {
+                                stage = (Stage)((Node) event.getSource()).getScene().getWindow();
+                                scene = new Scene(root);
+                                stage.setScene(scene);
+                                scene.setUserData(user);
+                                stage.show();
+
+                        });
+
+                    } else  {
+                        System.out.println("ERROR: Invalid username or password");
+                    }
+
                 }
             });
             t.start();
 
-            // true here meaning user is in the database and thus can login
-//            if (mongoBoolean.booleanValue() == true) {
-//                if (currentUser.isAdmin) { // admin login
-//
-//                    try {
-//                        root = FXMLLoader.load(getClass().getResource("AdminLibrary.fxml"));
-//                    } catch (IOException ioException) { ioException.printStackTrace(); }
-//
-//                } else { // member login
-//
-//                    try {
-//                        root = FXMLLoader.load(getClass().getResource("MemberLibrary.fxml"));
-//                    } catch (IOException ioException) { ioException.printStackTrace(); }
-//                }
-//
-//                // load user
-//                stage = (Stage)((Node) event.getSource()).getScene().getWindow();
-//                scene = new Scene(root);
-//                stage.setScene(scene);
-//                scene.setUserData(user);
-//                stage.show();
-//
-//            } else if (mongoBoolean.booleanValue() == false) {
-//                System.out.println("ERROR: Invalid username or password");
-//            }
+
+
+
+
 
 
 
@@ -218,7 +233,7 @@ public class LoginController {
                     // worked - only add to mongo if not in there
                     System.out.println("got to sign in");
 
-                    // false here meaning that the user has not already created account and we can do so
+                    // invalid here meaning that the user has not already created account and we can do so
                     if (foundUser.username.equals("invalid")) {
                         if (isAdmin) {
                             user = new User(username, password, true);

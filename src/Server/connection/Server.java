@@ -158,6 +158,7 @@ public class Server {
                                         if (currentUser.username.equals(((User)objectRecieved).username)) {
                                             System.out.println("server got username: " + ((User) objectRecieved).username);
                                             objectOutputStream.reset();
+                                            System.out.println("Current user: " + currentUser);
                                             objectOutputStream.writeObject(currentUser);
                                             objectOutputStream.flush();
                                             found = true;
