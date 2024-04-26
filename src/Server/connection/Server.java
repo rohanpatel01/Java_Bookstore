@@ -9,6 +9,7 @@ import java.util.Map;
 
 import Shared.*;
 import com.mongodb.client.*;
+import com.mongodb.client.model.Filters;
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistry;
@@ -160,12 +161,20 @@ public class Server {
                                     while (cursor.hasNext()) {
                                         User currentUser = cursor.next();
                                         if (currentUser.username.equals(((User)objectRecieved).username)) {
+
+                                            // todo: update mongo to new user with new cart items
+//                                            System.out.println("server updated user");
+
+//                                            MongoDBManager.bookCollection.findOneAndReplace(Filters.eq("title", item.title), (Book) inventoryLists.get(item.itemType).get(item.title));
+
                                             System.out.println("server got username: " + ((User) objectRecieved).username);
                                             objectOutputStream.reset();
                                             System.out.println("Current user: " + currentUser);
                                             objectOutputStream.writeObject(currentUser);
                                             objectOutputStream.flush();
                                             found = true;
+                                            MongoDBManager.userCollection.findOneAndReplace(Filters.eq("username", currentUser.username), (User) objectRecieved);
+
                                         }
                                     }
                                 }
@@ -183,6 +192,8 @@ public class Server {
                             }
 
                         }
+
+
                     }
 
                 } catch (IOException ioe) { ioe.printStackTrace(); }

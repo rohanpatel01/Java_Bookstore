@@ -300,6 +300,15 @@ public class MemberLibraryController {
         if (currentUser.cartItems.get(item.title) != null) {
             currentUser.cartItems.get(item.title).numCopies += item.numCopies;
 
+            // update the user in mongo
+            System.out.println("updated user after adding item to cart: " );
+            currentUser.printCart();
+            // todo: update user here
+           try {
+               objectOutputStream.writeObject(currentUser);
+               objectOutputStream.flush();
+           } catch (IOException ioe) {ioe.printStackTrace();}
+
            for (Node node : cartVBox.getChildren()) {
             if (node.getId() != null && node.getId().equals(item.title)) {
                 Platform.runLater(() -> {
@@ -314,6 +323,13 @@ public class MemberLibraryController {
             System.out.println("update cart item");
         } else {
             currentUser.add(item);
+
+            // todo: update user here
+//            try {
+//                objectOutputStream.writeObject(currentUser);
+//                objectOutputStream.flush();
+//            } catch (IOException ioe) {ioe.printStackTrace();}
+
             System.out.println("create cart item");
             HBox cartCardHBox = new HBox();
             cartCardHBox.setId(item.title);
