@@ -2,6 +2,7 @@ package Client;
 
 import Shared.*;
 import com.mongodb.client.MongoCursor;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -34,7 +35,10 @@ public class LoginController {
     ObjectOutputStream objectOutputStream;
     ObjectInputStream objectInputStream;
     Object objectRecieved;
-    Boolean mongoBoolean = null;
+    Boolean mongoBoolean = new Boolean(false);
+    private boolean mongoBooleanSet = false;
+    private final Object lock = new Object();
+
 
     @FXML
     TitledPane titledPane;
@@ -81,8 +85,16 @@ public class LoginController {
                     if ((objectRecieved = objectInputStream.readObject()) != null) {
                         if (objectRecieved instanceof Boolean) {
 //                            System.out.println("woohoo");
-                            System.out.println(((Boolean) objectRecieved).booleanValue());
-                            mongoBoolean = new Boolean(((Boolean) objectRecieved).booleanValue());
+                            synchronized (lock) {
+//                                System.out.println(((Boolean) objectRecieved).booleanValue());
+//                                mongoBoolean = new Boolean(((Boolean) objectRecieved).booleanValue());
+                                mongoBoolean = (Boolean) objectRecieved;
+                                System.out.println("recieved boolean value: " + (Boolean) objectRecieved);
+                                mongoBooleanSet = true;
+                                lock.notifyAll();
+//                                System.out.println("notify all");
+
+                            }
                         }
                     }
 
@@ -157,33 +169,39 @@ public class LoginController {
                 throw new RuntimeException(e);
             }
 
-            System.out.println("send user");
 
             Thread t = new Thread(() -> {
-                while(mongoBoolean == null) { }
-                System.out.println("omgggggggggg");
+                synchronized (lock) {
+                    while(!mongoBooleanSet) {
+                        try {
+                            // Wait until mongoBoolean is set
+                            lock.wait();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+
+                    // worked - only add to mongo if not in there
+                    System.out.println("mongoboolean value: " +mongoBoolean.booleanValue() );
+                    if (mongoBoolean.booleanValue() == false) {
+                        if (isAdmin) {
+                            user = new User(username, password, true);
+                        } else {
+                            user = new User(username, password, false);
+                        }
+                        MongoDBManager.userCollection.insertOne(user);
+
+                        mongoBooleanSet = false; // reset back to false
+                    } else if (mongoBoolean.booleanValue() == true){
+                        System.out.println("client already created account");
+                    }
+
+                }
             });
             t.start();
 
 
-//            try (MongoCursor<User> cursor = MongoDBManager.userCollection.find().iterator()) {
-//                while (cursor.hasNext()) {
-//                    User currentUser = cursor.next();
-//                    if (currentUser.username.equals(username)) {
-//                        System.out.println("ERROR: User already signed up");
-//                        return;
-//                    }
-//                }
-//            }
-
-//            if (isAdmin) {
-////                adminCredentials.put(username, password);
-//                user = new User(username, password, true);
-//            } else {
-////                memberCredentials.put(username, password);
-//                user = new User(username, password, false);
-//            }
-//            MongoDBManager.userCollection.insertOne(user);
         }
 
     }
