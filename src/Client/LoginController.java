@@ -24,7 +24,12 @@ import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import Shared.User;
+
+
 public class LoginController {
+
+    public static User currentUser;
 
     private Stage stage;
     private Scene scene;
@@ -59,8 +64,15 @@ public class LoginController {
     Button changeUserButton;
     @FXML
     Button exitButton;
+
     User user = new User();
 
+    public void initialize() {
+        System.out.println("stage: " + stage);
+        System.out.println("scene: " + scene);
+        System.out.println("root: " + root);
+//        stage = (Stage) exitButton.getScene().getWindow();
+    }
     public LoginController() {
         client = new Client();
         client.setupNetworking();
@@ -155,16 +167,28 @@ public class LoginController {
                         } else { // member login
 
                             try {
-                                root = FXMLLoader.load(getClass().getResource("MemberLibrary.fxml"));
+                                FXMLLoader loader = new FXMLLoader(getClass().getResource("MemberLibrary.fxml"));
+                                root = loader.load();
+
+                                // get the user for the member
+                                MemberLibraryController memberLibraryController = loader.getController();
+                                memberLibraryController.setUser(foundUser);
+
+
                             } catch (IOException ioException) { ioException.printStackTrace(); }
                         }
+                        // to pass user into member library controller
+//                        stage.setUserData(new User(username, password, foundUser.isAdmin));
 
                         // load user
                         Platform.runLater(() -> {
                                 stage = (Stage)((Node) event.getSource()).getScene().getWindow();
                                 scene = new Scene(root);
                                 stage.setScene(scene);
-                                scene.setUserData(user);
+//                                stage.setUserData(user);
+//                                System.out.println("stage user data: " + stage.getUserData());
+                            root.setUserData(5);
+                                currentUser = foundUser;
                                 stage.show();
 
                         });
