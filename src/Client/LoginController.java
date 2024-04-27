@@ -14,13 +14,11 @@ import javafx.event.ActionEvent;
 import javafx.scene.Node;
 
 
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
@@ -39,9 +37,6 @@ import javafx.util.Duration;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
-
-
-
 
 public class LoginController {
 
@@ -84,8 +79,16 @@ public class LoginController {
     Button exitButton;
     @FXML
     Label notificationLabel;
+    @FXML
+    Hyperlink forgotPasswordHyperLink;
+    @FXML
+    Label newPasswordLabel;
+    @FXML
+    TextField newPasswordField;
+
 
     SecretKey encryptionKey;
+    boolean useNewPassword = false;
 
     String hexColor;
     int red;
@@ -93,10 +96,6 @@ public class LoginController {
     int blue;
 
     public void initialize() {
-        System.out.println("stage: " + stage);
-        System.out.println("scene: " + scene);
-        System.out.println("root: " + root);
-
 
         hexColor = "#ff7675";
         red = Integer.valueOf(hexColor.substring(1, 3), 16);
@@ -156,11 +155,16 @@ public class LoginController {
     @FXML
     public void loginButton(ActionEvent event) {
 
-        String username = loginUser.getText();
-        String password = loginPassword.getText();
-        System.out.println("login button pressed ");
 
-        // TODO: make this better by having helper methods
+        String username = loginUser.getText();
+        String password;
+
+        if (useNewPassword) {
+            password = newPasswordField.getText();
+        } else {
+            password = loginPassword.getText();
+        }
+
 
         if (!(username.isEmpty() || password.isEmpty())) {
 
@@ -187,11 +191,6 @@ public class LoginController {
 
                     mongoCommFlag = false; // reset flag
 
-                    // true here meaning user is in the database and thus can login
-                    System.out.println("Found user: " + recievedUser);
-                    System.out.println("expected login username: " + username);
-
-                    //  && (password + salt).equals(decryptedPasswordFromRecieveUser)
                     if (recievedUser.username.equals(username)) {
 
                         if (recievedUser.isAdmin) { // admin login
@@ -227,11 +226,9 @@ public class LoginController {
                         });
 
                     } else  {
-                        System.out.println("ERROR: Invalid username or password");
 
                         Platform.runLater(() -> {
                             notificationLabel.setText("WARNING: Invalid username or password. Please try again.");
-
                             notificationLabel.setBackground(new Background(new BackgroundFill(Color.rgb(red, green, blue), new CornerRadii(5), null))); // red
 
                             Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(3), action -> {
@@ -264,10 +261,7 @@ public class LoginController {
         if (!(username.isEmpty()) || password.isEmpty()) {
 
             String saltedPassword = password + salt;
-
             User sendUser = new User(username, saltedPassword, false);
-
-            System.out.println("sign up password: " + sendUser);
 
             try {
                 sendUser.password = encrypt(sendUser.password, encryptionKey);
@@ -275,7 +269,6 @@ public class LoginController {
                 throw new RuntimeException(e);
             }
             sendUser.isSignup = true;
-
 
 
             try {
@@ -299,8 +292,6 @@ public class LoginController {
 
                     mongoCommFlag  = false; // reset back to false
 
-                    // worked - only add to mongo if not in there
-                    System.out.println("got to sign in");
 
                     // invalid here meaning that the user has not already created account and we can do so
                     if (recievedUser.username.equals("invalid")) {
@@ -311,14 +302,9 @@ public class LoginController {
                         } else {
                             user = sendUser;
                             user.isAdmin = false;
-//                            user = new User(username, saltedPassword, false);
                         }
 
                     } else {
-                        System.out.println("client already created account");
-
-                        // notify user of invalid action
-                        // just change label
                         Platform.runLater(() -> {
 
                             notificationLabel.setBackground(new Background(new BackgroundFill(Color.rgb(red, green, blue), new CornerRadii(5), null))); // red
@@ -331,19 +317,13 @@ public class LoginController {
                             }));
                             timeline.setCycleCount(1); // Run only once
                             timeline.play();
-
-
                         });
-
                     }
-
                 }
             });
             t.start();
 
-
         }
-
     }
 
     @FXML
@@ -408,5 +388,21 @@ public class LoginController {
         // Convert the decrypted bytes back to string
         return new String(decryptedBytes);
     }
+
+    public void forgotPassword(ActionEvent event) {
+        useNewPassword = true;
+
+        ((Hyperlink) event.getSource()).setVisible(false);
+        ((TextField) loginPassword).setDisable(true);
+
+        ((Label) newPasswordLabel).setVisible(true);
+        ((TextField) newPasswordField).setVisible(true);
+
+
+    }
+
+
+
+
 
 }

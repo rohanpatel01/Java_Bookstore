@@ -4,20 +4,10 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+
 
 import Shared.*;
 import com.mongodb.client.*;
-import org.bson.Document;
-import org.bson.codecs.configuration.CodecProvider;
-import org.bson.codecs.configuration.CodecRegistry;
-import org.bson.codecs.pojo.PojoCodecProvider;
-
-import static com.mongodb.MongoClientSettings.getDefaultCodecRegistry;
-import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
-import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
-
 public class Server {
 
     Inventory inventory;
@@ -36,10 +26,6 @@ public class Server {
 
         clientList = new ArrayList<>();
         inventory = new Inventory();
-
-
-//        Book starterBook = new Book("Glass_Castle", "good book", "J. Walls", 288, 5); // making _ we will parse this out later
-//        bookCollection.insertOne(starterBook);
 
 
         try {
@@ -91,9 +77,6 @@ public class Server {
 //            inventory.bookList.put(starterBook.title, starterBook);
 //            inventory.movieList.put(starterMovie.title, starterMovie);
 //            inventory.bookList.put(otherBook .title, otherBook );
-
-            // TODO: read items from mongo and update the inventory lists then everything should work as intended
-            // TODO: just make sure when we add an item to inventory we also add it to the respective mongo database
 
            for (int i = 0; i < MongoDBManager.allCollections.size(); i++) {
                try (MongoCursor<LibraryItem> cursor = MongoDBManager.allCollections.get(i).find().iterator()) {
@@ -154,15 +137,10 @@ public class Server {
                                 boolean found = false;
 
                                 try (MongoCursor<User> cursor = MongoDBManager.userCollection.find().iterator()) {
-                                    // TODO: need to know when to add user to mongoDB
-                                    // check for isSignup and see if is true then add to mongo,
-                                    // else if false (login) - dont do anything - do normal
                                     while (cursor.hasNext()) {
                                         User currentUser = cursor.next();
                                         if (currentUser.username.equals(((User)objectRecieved).username)) {
-                                            System.out.println("server got username: " + ((User) objectRecieved).username);
                                             objectOutputStream.reset();
-                                            System.out.println("Current user: " + currentUser);
                                             objectOutputStream.writeObject(currentUser);
                                             objectOutputStream.flush();
                                             found = true;
@@ -174,7 +152,6 @@ public class Server {
                                     if (((User) objectRecieved).isSignup) {
                                         MongoDBManager.userCollection.insertOne( (User) objectRecieved);
                                     }
-                                    System.out.println("not found");
                                     objectOutputStream.reset();
                                     objectOutputStream.writeObject(new User("invalid", "invalid", false)); // will be used to indicate user is not in database
                                     objectOutputStream.flush();
@@ -203,7 +180,6 @@ public class Server {
             if ((objectReceived).numCopies > 0) {
 
                 inventory.updateItem(objectReceived);
-                System.out.println("server num copies greater than 0");
 
                 sendToAllClients( inventory.inventoryLists.get(itemType).get(( objectReceived).title) , objectOutputStream);
             } else {
@@ -212,7 +188,6 @@ public class Server {
                     // TODO: May need to synchronize this so multiple clients cannot get same item
                     inventory.updateItem( objectReceived);
                     sendToAllClients( inventory.inventoryLists.get(itemType).get(( objectReceived).title) , objectOutputStream);
-                    System.out.println("sending to all clients: " + objectReceived);
                 } else {
                     System.out.println("cannot borrow item");
                 }
