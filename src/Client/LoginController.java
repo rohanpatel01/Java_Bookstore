@@ -203,8 +203,12 @@ public class LoginController {
 
         if (!(username.isEmpty()) || password.isEmpty()) {
 
-            User sendUser = new User(username, password, false);
+            String saltedPassword = password + "salty:D";
+
+            User sendUser = new User(username, saltedPassword, false);
             sendUser.isSignup = true;
+
+
 
             try {
                 objectOutputStream.writeObject(sendUser);
@@ -234,9 +238,12 @@ public class LoginController {
                     if (recievedUser.username.equals("invalid")) {
                         // TODO: should not be adding to mongo here, rather just make the user so when we login we have it
                         if (isAdmin) {
-                            user = new User(username, password, true);
+                            user = sendUser;
+                            user.isAdmin = true;
                         } else {
-                            user = new User(username, password, false);
+                            user = sendUser;
+                            user.isAdmin = false;
+//                            user = new User(username, saltedPassword, false);
                         }
 
                     } else {
