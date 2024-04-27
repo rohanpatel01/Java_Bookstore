@@ -85,6 +85,8 @@ public class LoginController {
     @FXML
     Label notificationLabel;
 
+    SecretKey encryptionKey;
+
     String hexColor;
     int red;
     int green;
@@ -100,6 +102,12 @@ public class LoginController {
         red = Integer.valueOf(hexColor.substring(1, 3), 16);
         green = Integer.valueOf(hexColor.substring(3, 5), 16);
         blue = Integer.valueOf(hexColor.substring(5, 7), 16);
+
+        try {
+            encryptionKey = generateSecretKey();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
     }
     public LoginController() {
@@ -159,9 +167,6 @@ public class LoginController {
 
             User sendUser = new User(username, password, false);
 
-
-
-
             try {
                 objectOutputStream.writeObject(sendUser);
                 objectOutputStream.flush();
@@ -185,7 +190,19 @@ public class LoginController {
                     // true here meaning user is in the database and thus can login
                     System.out.println("Found user: " + recievedUser);
                     System.out.println("expected login username: " + username);
-                    if (recievedUser.username.equals(username) && recievedUser.password.equals(password + salt)) {
+//                    if (recievedUser.username.equals(username) && recievedUser.password.equals(password + salt)) {
+                    // see if (password + salt) == recievedUser.password decrypted
+                    String decryptedPasswordFromRecieveUser;
+
+//                    try {
+//                        decryptedPasswordFromRecieveUser = decrypt(recievedUser.password, recievedUser.encryptionKey);
+//                    } catch (Exception e) {
+//                        throw new RuntimeException(e);
+//                    }
+
+//                    System.out.println("recieved user: " + recievedUser);
+
+                    if (recievedUser.username.equals(username)) {
 
 //                        try {
 //                            recievedUser.password = decrypt(recievedUser.password, recievedUser.encryptionKey);
@@ -267,12 +284,11 @@ public class LoginController {
 
             User sendUser = new User(username, saltedPassword, false);
 
-//            try {
-//                sendUser.encryptionKey = generateSecretKey();
-//                sendUser.password = encrypt(sendUser.password, sendUser.encryptionKey);
-//            } catch (Exception e) {
-//                throw new RuntimeException(e);
-//            }
+            try {
+                sendUser.password = encrypt(sendUser.password, encryptionKey);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
             sendUser.isSignup = true;
 
 
@@ -368,12 +384,13 @@ public class LoginController {
     }
 
 
-    public static SecretKey generateSecretKey() throws Exception {
+    private static SecretKey generateSecretKey() throws Exception {
         // Generate a secret key using AES algorithm
         KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
         keyGenerator.init(128); // You can use 128, 192, or 256
         return keyGenerator.generateKey();
     }
+
 
     public static String encrypt(String input, Key key) throws Exception {
         // Create cipher object
