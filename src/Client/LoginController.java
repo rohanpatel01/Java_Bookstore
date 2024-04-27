@@ -20,10 +20,16 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.security.Key;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
 import Shared.User;
+
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 
 
 public class LoginController {
@@ -127,6 +133,9 @@ public class LoginController {
 
             User sendUser = new User(username, password, false);
 
+
+
+
             try {
                 objectOutputStream.writeObject(sendUser);
                 objectOutputStream.flush();
@@ -151,6 +160,14 @@ public class LoginController {
                     System.out.println("Found user: " + recievedUser);
                     System.out.println("expected login username: " + username);
                     if (recievedUser.username.equals(username)) {
+
+//                        try {
+//                            recievedUser.password = decrypt(recievedUser.password, recievedUser.encryptionKey);
+//
+//                        } catch (Exception e) {
+//                            throw new RuntimeException(e);
+//                        }
+
                         if (recievedUser.isAdmin) { // admin login
 
                             try {
@@ -206,6 +223,13 @@ public class LoginController {
             String saltedPassword = password + "salty:D";
 
             User sendUser = new User(username, saltedPassword, false);
+
+            try {
+                sendUser.encryptionKey = generateSecretKey();
+                sendUser.password = encrypt(sendUser.password, sendUser.encryptionKey);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
             sendUser.isSignup = true;
 
 
@@ -281,5 +305,44 @@ public class LoginController {
         } catch (IOException ioException) { ioException.printStackTrace(); }
     }
 
+
+    public static SecretKey generateSecretKey() throws Exception {
+        // Generate a secret key using AES algorithm
+        KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+        keyGenerator.init(128); // You can use 128, 192, or 256
+        return keyGenerator.generateKey();
+    }
+
+    public static String encrypt(String input, Key key) throws Exception {
+        // Create cipher object
+        Cipher cipher = Cipher.getInstance("AES");
+
+        // Initialize cipher to encryption mode
+        cipher.init(Cipher.ENCRYPT_MODE, key);
+
+        // Encrypt the input string
+        byte[] encryptedBytes = cipher.doFinal(input.getBytes());
+
+        // Encode the encrypted bytes to base64 for easy storage or transmission
+        return Base64.getEncoder().encodeToString(encryptedBytes);
+    }
+
+
+    public static String decrypt(String encryptedInput, Key key) throws Exception {
+        // Create cipher object
+        Cipher cipher = Cipher.getInstance("AES");
+
+        // Initialize cipher to decryption mode
+        cipher.init(Cipher.DECRYPT_MODE, key);
+
+        // Decode the base64 string to get the encrypted bytes
+        byte[] encryptedBytes = Base64.getDecoder().decode(encryptedInput);
+
+        // Decrypt the bytes
+        byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
+
+        // Convert the decrypted bytes back to string
+        return new String(decryptedBytes);
+    }
 
 }

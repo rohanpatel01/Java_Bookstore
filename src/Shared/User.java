@@ -1,6 +1,8 @@
 package Shared;
 
+import javax.crypto.SecretKey;
 import java.io.Serializable;
+import java.security.Key;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,6 +13,7 @@ public class User implements Serializable {
     public boolean isAdmin;
     public Map<String, LibraryItem> cartItems;
     public boolean isSignup;
+    public SecretKey encryptionKey;
 
     public User() {}
 
@@ -20,6 +23,7 @@ public class User implements Serializable {
         this.isAdmin = isAdmin;
         cartItems = new HashMap<>();
         isSignup= false;
+        encryptionKey = ;
     }
 
 
