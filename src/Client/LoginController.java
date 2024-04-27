@@ -1,6 +1,8 @@
 package Client;
 
 import Shared.*;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -13,8 +15,14 @@ import javafx.scene.Node;
 
 
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.paint.Color;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -26,10 +34,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import Shared.User;
+import javafx.util.Duration;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+
+
 
 
 public class LoginController {
@@ -50,6 +61,8 @@ public class LoginController {
     private boolean mongoCommFlag = false;
     private final Object lock = new Object();
 
+    private String salt = "salty:D";
+
 
     @FXML
     TitledPane titledPane;
@@ -69,12 +82,25 @@ public class LoginController {
     Button changeUserButton;
     @FXML
     Button exitButton;
+    @FXML
+    Label notificationLabel;
 
+    String hexColor;
+    int red;
+    int green;
+    int blue;
 
     public void initialize() {
         System.out.println("stage: " + stage);
         System.out.println("scene: " + scene);
         System.out.println("root: " + root);
+
+
+        hexColor = "#ff7675";
+        red = Integer.valueOf(hexColor.substring(1, 3), 16);
+        green = Integer.valueOf(hexColor.substring(3, 5), 16);
+        blue = Integer.valueOf(hexColor.substring(5, 7), 16);
+
     }
     public LoginController() {
         client = new Client();
@@ -159,7 +185,7 @@ public class LoginController {
                     // true here meaning user is in the database and thus can login
                     System.out.println("Found user: " + recievedUser);
                     System.out.println("expected login username: " + username);
-                    if (recievedUser.username.equals(username)) {
+                    if (recievedUser.username.equals(username) && recievedUser.password.equals(password + salt)) {
 
 //                        try {
 //                            recievedUser.password = decrypt(recievedUser.password, recievedUser.encryptionKey);
@@ -202,6 +228,23 @@ public class LoginController {
 
                     } else  {
                         System.out.println("ERROR: Invalid username or password");
+
+                        Platform.runLater(() -> {
+                            notificationLabel.setText("WARNING: Invalid username or password. Please try again.");
+
+                            notificationLabel.setBackground(new Background(new BackgroundFill(Color.rgb(red, green, blue), new CornerRadii(5), null))); // red
+
+                            Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(3), action -> {
+                                // reset warning label to disappear
+                                notificationLabel.setText("");
+                                notificationLabel.setBackground(Background.EMPTY);
+                            }));
+                            timeline.setCycleCount(1); // Run only once
+                            timeline.play();
+
+
+                        });
+
                     }
 
                 }
@@ -212,7 +255,7 @@ public class LoginController {
     }
 
     @FXML
-    public void signupButton() {
+    public void signupButton(ActionEvent event) {
 
         String username = createUser.getText();
         String password = createPassword.getText();
@@ -220,16 +263,16 @@ public class LoginController {
 
         if (!(username.isEmpty()) || password.isEmpty()) {
 
-            String saltedPassword = password + "salty:D";
+            String saltedPassword = password + salt;
 
             User sendUser = new User(username, saltedPassword, false);
 
-            try {
-                sendUser.encryptionKey = generateSecretKey();
-                sendUser.password = encrypt(sendUser.password, sendUser.encryptionKey);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+//            try {
+//                sendUser.encryptionKey = generateSecretKey();
+//                sendUser.password = encrypt(sendUser.password, sendUser.encryptionKey);
+//            } catch (Exception e) {
+//                throw new RuntimeException(e);
+//            }
             sendUser.isSignup = true;
 
 
@@ -272,6 +315,25 @@ public class LoginController {
 
                     } else {
                         System.out.println("client already created account");
+
+                        // notify user of invalid action
+                        // just change label
+                        Platform.runLater(() -> {
+
+                            notificationLabel.setBackground(new Background(new BackgroundFill(Color.rgb(red, green, blue), new CornerRadii(5), null))); // red
+                            notificationLabel.setText("WARNING: This username is already taken. Please select another or login.");
+
+                            Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(3), action -> {
+                                // reset warning label to disappear
+                                notificationLabel.setText("");
+                                notificationLabel.setBackground(Background.EMPTY);
+                            }));
+                            timeline.setCycleCount(1); // Run only once
+                            timeline.play();
+
+
+                        });
+
                     }
 
                 }

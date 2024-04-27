@@ -13,7 +13,7 @@ public class User implements Serializable {
     public boolean isAdmin;
     public Map<String, LibraryItem> cartItems;
     public boolean isSignup;
-    public SecretKey encryptionKey;
+//    public SecretKey encryptionKey;
 
     public User() {}
 
@@ -23,7 +23,7 @@ public class User implements Serializable {
         this.isAdmin = isAdmin;
         cartItems = new HashMap<>();
         isSignup= false;
-        encryptionKey = ;
+//        encryptionKey = ;
     }
 
 
