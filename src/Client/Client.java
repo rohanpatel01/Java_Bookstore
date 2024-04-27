@@ -1,9 +1,7 @@
 package Client;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.Socket;
-
-import Shared.Book;
 
 public class Client {
 

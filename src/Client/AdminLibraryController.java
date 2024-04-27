@@ -14,8 +14,8 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 public class AdminLibraryController {
 
@@ -106,7 +106,7 @@ public class AdminLibraryController {
 
 
 
-        Thread t = new Thread(new AdminLibraryController.ObjectReader()); //, objectOutputStream
+        Thread t = new Thread(new ObjectReader()); //, objectOutputStream
         t.start();
 
 

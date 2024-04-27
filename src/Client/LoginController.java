@@ -1,47 +1,31 @@
 package Client;
 
-import Shared.*;
+import Shared.User;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.event.ActionEvent;
-
-
-import javafx.scene.Node;
-
-
 import javafx.scene.control.*;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.Pane;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
-import javafx.stage.Popup;
 import javafx.stage.Stage;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.security.Key;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import Shared.User;
 import javafx.util.Duration;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.security.Key;
+import java.util.Base64;
 
 public class LoginController {
 
@@ -194,8 +178,8 @@ public class LoginController {
                     mongoCommFlag = false; // reset flag
 
                     if (recievedUser.username.equals(username)) {
-
-                        if (recievedUser.isAdmin) { // admin login
+                        System.out.println("login admin status: " + isAdmin);
+                        if (recievedUser.isAdmin || isAdmin) { // admin login - changed to isAdmin and not isUserAdmin
 
                             try {
                                 root = FXMLLoader.load(getClass().getResource("AdminLibrary.fxml"));
@@ -204,14 +188,18 @@ public class LoginController {
                         } else { // member login
 
                             try {
+                                System.out.println("change scene to admin");
+
                                 FXMLLoader loader = new FXMLLoader(getClass().getResource("MemberLibrary.fxml"));
+//                                FXMLLoader.load(getClass().getResource("MemberLibrary.fxml"));
                                 root = loader.load();
+//                                root = loader.load();
 
                                 // get the user for the member
                                 MemberLibraryController memberLibraryController = loader.getController();
 //                                memberLibraryController.setUser(user);
                                 memberLibraryController.setUser(recievedUser);
-                                System.out.println("login controller found user cart items: " + recievedUser);
+//                                System.out.println("login controller found user cart items: " + recievedUser);
 
 
                             } catch (IOException ioException) { ioException.printStackTrace(); }
@@ -329,11 +317,11 @@ public class LoginController {
                     if (recievedUser.username.equals("invalid")) {
                         // TODO: should not be adding to mongo here, rather just make the user so when we login we have it
                         if (isAdmin) {
+                            sendUser.isAdmin = true;
                             user = sendUser;
-                            user.isAdmin = true;
                         } else {
+                            sendUser.isAdmin = false;
                             user = sendUser;
-                            user.isAdmin = false;
                         }
 
                     } else {

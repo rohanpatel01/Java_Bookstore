@@ -1,6 +1,5 @@
 package Client;
 
-import Server.connection.Server;
 import Shared.*;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -10,21 +9,13 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import javax.swing.*;
-//import java.awt.event.ActionEvent;
 import java.io.IOException;
-//import java.io.ObjectInputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 public class MemberLibraryController {
 
