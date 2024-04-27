@@ -190,26 +190,9 @@ public class LoginController {
                     // true here meaning user is in the database and thus can login
                     System.out.println("Found user: " + recievedUser);
                     System.out.println("expected login username: " + username);
-//                    if (recievedUser.username.equals(username) && recievedUser.password.equals(password + salt)) {
-                    // see if (password + salt) == recievedUser.password decrypted
-                    String decryptedPasswordFromRecieveUser;
 
-//                    try {
-//                        decryptedPasswordFromRecieveUser = decrypt(recievedUser.password, recievedUser.encryptionKey);
-//                    } catch (Exception e) {
-//                        throw new RuntimeException(e);
-//                    }
-
-//                    System.out.println("recieved user: " + recievedUser);
-
+                    //  && (password + salt).equals(decryptedPasswordFromRecieveUser)
                     if (recievedUser.username.equals(username)) {
-
-//                        try {
-//                            recievedUser.password = decrypt(recievedUser.password, recievedUser.encryptionKey);
-//
-//                        } catch (Exception e) {
-//                            throw new RuntimeException(e);
-//                        }
 
                         if (recievedUser.isAdmin) { // admin login
 
@@ -283,6 +266,8 @@ public class LoginController {
             String saltedPassword = password + salt;
 
             User sendUser = new User(username, saltedPassword, false);
+
+            System.out.println("sign up password: " + sendUser);
 
             try {
                 sendUser.password = encrypt(sendUser.password, encryptionKey);
