@@ -19,10 +19,13 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -30,6 +33,8 @@ import java.security.Key;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import Shared.User;
 import javafx.util.Duration;
@@ -57,6 +62,10 @@ public class LoginController {
     private final Object lock = new Object();
 
     private String salt = "salty:D";
+
+    String pastelRedHex = "#ff7675";
+    String pastelGreenHex = "#55efc4";
+    double warningNotificationTime = 1.5;
 
 
     @FXML
@@ -90,17 +99,10 @@ public class LoginController {
     SecretKey encryptionKey;
     boolean useNewPassword = false;
 
-    String hexColor;
-    int red;
-    int green;
-    int blue;
 
     public void initialize() {
 
-        hexColor = "#ff7675";
-        red = Integer.valueOf(hexColor.substring(1, 3), 16);
-        green = Integer.valueOf(hexColor.substring(3, 5), 16);
-        blue = Integer.valueOf(hexColor.substring(5, 7), 16);
+
 
         try {
             encryptionKey = generateSecretKey();
@@ -229,9 +231,9 @@ public class LoginController {
 
                         Platform.runLater(() -> {
                             notificationLabel.setText("WARNING: Invalid username or password. Please try again.");
-                            notificationLabel.setBackground(new Background(new BackgroundFill(Color.rgb(red, green, blue), new CornerRadii(5), null))); // red
+                            notificationLabel.setBackground(new Background(new BackgroundFill(getColorFromHex(pastelRedHex), new CornerRadii(5), null))); // red
 
-                            Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(3), action -> {
+                            Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(warningNotificationTime), action -> {
                                 // reset warning label to disappear
                                 notificationLabel.setText("");
                                 notificationLabel.setBackground(Background.EMPTY);
@@ -257,8 +259,38 @@ public class LoginController {
         String username = createUser.getText();
         String password = createPassword.getText();
 
-
         if (!(username.isEmpty()) || password.isEmpty()) {
+
+
+            if (!isPasswordStrong(password)) {
+                Platform.runLater(() -> {
+
+                    notificationLabel.setBackground(new Background(new BackgroundFill(getColorFromHex(pastelRedHex), new CornerRadii(5), null)));
+                    notificationLabel.setText("Password is too weak. Try again");
+
+                    Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(warningNotificationTime), action -> {
+                        // reset warning label to disappear
+                        notificationLabel.setText("");
+                        notificationLabel.setBackground(Background.EMPTY);
+                    }));
+                    timeline.setCycleCount(1); // Run only once
+                    timeline.play();
+                });
+                return;
+            }
+
+            Platform.runLater(() -> {
+                notificationLabel.setBackground(new Background(new BackgroundFill(getColorFromHex(pastelGreenHex), new CornerRadii(5), null)));
+                notificationLabel.setText("successful sign up");
+
+                Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(warningNotificationTime), action -> {
+                    // reset warning label to disappear
+                    notificationLabel.setText("");
+                    notificationLabel.setBackground(Background.EMPTY);
+                }));
+                timeline.setCycleCount(1); // Run only once
+                timeline.play();
+            });
 
             String saltedPassword = password + salt;
             User sendUser = new User(username, saltedPassword, false);
@@ -307,10 +339,10 @@ public class LoginController {
                     } else {
                         Platform.runLater(() -> {
 
-                            notificationLabel.setBackground(new Background(new BackgroundFill(Color.rgb(red, green, blue), new CornerRadii(5), null))); // red
+                            notificationLabel.setBackground(new Background(new BackgroundFill(getColorFromHex("#ff7675"), new CornerRadii(5), null))); // red
                             notificationLabel.setText("WARNING: This username is already taken. Please select another or login.");
 
-                            Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(3), action -> {
+                            Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(warningNotificationTime), action -> {
                                 // reset warning label to disappear
                                 notificationLabel.setText("");
                                 notificationLabel.setBackground(Background.EMPTY);
@@ -401,7 +433,20 @@ public class LoginController {
 
     }
 
+    private boolean isPasswordStrong(String password) {
 
+        if (password.length() < 8) { return false; }
+        if (!password.matches("[a-zA-Z0-9]")) { return true; }
+        return true;
+    }
+
+    private Color getColorFromHex(String hexColor) {
+
+        int red = Integer.valueOf(hexColor.substring(1, 3), 16);
+        int green = Integer.valueOf(hexColor.substring(3, 5), 16);
+        int blue = Integer.valueOf(hexColor.substring(5, 7), 16);
+        return Color.rgb(red, green, blue);
+    }
 
 
 
